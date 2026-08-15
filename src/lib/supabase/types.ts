@@ -173,6 +173,8 @@ export interface Database {
           target_rounds: number | null;
           max_participants: number;
           camp_id: string | null;
+          venue_price_eur: number | null;
+          payment_link_url: string | null;
           created_at: string;
           updated_at: string;
         };
@@ -195,6 +197,8 @@ export interface Database {
           target_rounds?: number | null;
           max_participants?: number;
           camp_id?: string | null;
+          venue_price_eur?: number | null;
+          payment_link_url?: string | null;
         };
         Update: Partial<{
           status: SparSessionStatus;
@@ -207,6 +211,8 @@ export interface Database {
           venue_name: string | null;
           min_weight_kg: number | null;
           max_weight_kg: number | null;
+          venue_price_eur: number | null;
+          payment_link_url: string | null;
           requested_stance: Stance | "ANY" | null;
           level: string | null;
           intensity: SparIntensity;
@@ -244,15 +250,18 @@ export interface Database {
           spar_session_id: string;
           user_id: string;
           role: SparParticipantRole;
+          payment_confirmed: boolean;
           joined_at: string;
         };
         Insert: {
           spar_session_id: string;
           user_id: string;
           role?: SparParticipantRole;
+          payment_confirmed?: boolean;
         };
         Update: Partial<{
           role: SparParticipantRole;
+          payment_confirmed: boolean;
         }>;
         Relationships: [];
       };

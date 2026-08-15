@@ -3,7 +3,7 @@
 import { useCallback, useEffect, useState } from "react";
 import { useRouter } from "next/navigation";
 import { createClient } from "@/lib/supabase/client";
-import { getSparSession, getMyRequestForSession, requestToJoin, cancelSparSession } from "@/lib/supabase/spar";
+import { getSparSession, getMyRequestForSession, requestToJoin, cancelSparSession, setParticipantPaymentConfirmed } from "@/lib/supabase/spar";
 import { ChevronLeftIcon } from "@/components/icons/Icon";
 
 const MODE_LABELS: Record<string, string> = { OPEN_ROUNDS: "OPEN ROUNDS", CAMP_SPAR: "CAMP SPAR" };
@@ -128,10 +128,45 @@ export function SparSessionDetail({ id }: { id: string }) {
         <div className="mb-7">
           <div className="text-smoke text-xs font-semibold tracking-[0.05em] mb-2.5">PARTICIPANTS CONFIRMÉS</div>
           {participants.map((p) => (
-            <div key={p.id} className="text-bone text-sm mb-1">
-              {p.name} {p.role === "HOST" ? "(organisateur)" : ""}
+            <div key={p.id} className="flex items-center justify-between mb-1">
+              <span className="text-bone text-sm">
+                {p.name} {p.role === "HOST" ? "(organisateur)" : ""}
+              </span>
+              {isHost && s.venue_price_eur != null && p.role !== "HOST" && (
+                <button
+                  onClick={async () => {
+                    await setParticipantPaymentConfirmed(supabase, p.id, !p.payment_confirmed);
+                    await load();
+                  }}
+                  className={`text-xs bg-transparent border-none cursor-pointer ${p.payment_confirmed ? "text-success" : "text-smoke"}`}
+                >
+                  {p.payment_confirmed ? "✓ Payé" : "En attente"}
+                </button>
+              )}
             </div>
           ))}
+        </div>
+      )}
+
+      {s.venue_price_eur != null && (
+        <div className="bg-carbon rounded-card p-4.5 mb-6">
+          <div className="text-smoke text-xs font-semibold tracking-[0.05em] mb-2.5">PRIX DE LA SALLE</div>
+          <div className="text-bone text-sm mb-1">
+            {s.venue_price_eur.toFixed(2)} € · {s.max_participants} personnes
+          </div>
+          <div className={`text-smoke text-[13px] ${!isHost ? "mb-3.5" : ""}`}>
+            Part par personne : {(s.venue_price_eur / s.max_participants).toFixed(2)} €
+          </div>
+          {!isHost && isParticipant && s.payment_link_url && (
+            <a
+              href={s.payment_link_url}
+              target="_blank"
+              rel="noopener noreferrer"
+              className="block text-center h-[46px] leading-[46px] rounded-pill bg-bone text-obsidian text-sm font-semibold no-underline"
+            >
+              Payer {(s.venue_price_eur / s.max_participants).toFixed(2)} €
+            </a>
+          )}
         </div>
       )}
 

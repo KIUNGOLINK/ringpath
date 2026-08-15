@@ -30,6 +30,8 @@ export type CreateSparSessionInput = {
   targetRounds?: number;
   maxParticipants: number;
   campId?: string;
+  venuePriceEur?: number;
+  paymentLinkUrl?: string;
 };
 
 export async function createSparSession(supabase: Client, input: CreateSparSessionInput) {
@@ -52,6 +54,8 @@ export async function createSparSession(supabase: Client, input: CreateSparSessi
       target_rounds: input.targetRounds,
       max_participants: input.maxParticipants,
       camp_id: input.campId,
+      venue_price_eur: input.venuePriceEur,
+      payment_link_url: input.paymentLinkUrl,
     })
     .select()
     .single();
@@ -230,6 +234,14 @@ export async function acceptJoinRequest(supabase: Client, requestId: string, spa
 
 export async function declineJoinRequest(supabase: Client, requestId: string) {
   const { error } = await supabase.from("spar_join_requests").update({ status: "DECLINED" }).eq("id", requestId);
+  if (error) throw error;
+}
+
+// Host-attested only — there's no real payment webhook behind this, so it
+// is never treated as verified proof of payment, just a manual note the
+// host can toggle after checking their own payment app.
+export async function setParticipantPaymentConfirmed(supabase: Client, participantId: string, confirmed: boolean) {
+  const { error } = await supabase.from("spar_participants").update({ payment_confirmed: confirmed }).eq("id", participantId);
   if (error) throw error;
 }
 
