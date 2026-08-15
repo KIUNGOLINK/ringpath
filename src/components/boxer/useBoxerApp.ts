@@ -28,6 +28,8 @@ export function useBoxerApp() {
         weight: boxer?.weight_kg != null ? String(boxer.weight_kg) : s.weight,
         stance: (boxer?.stance as Stance) ?? s.stance,
         coachName,
+        wins: boxer?.wins ?? 0,
+        losses: boxer?.losses ?? 0,
         camp: camp
           ? {
               id: camp.id,

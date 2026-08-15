@@ -61,6 +61,8 @@ export interface BoxerState {
   // populated once signed in
   userId: string | null;
   coachName: string | null;
+  wins: number;
+  losses: number;
   camp: Camp | null;
   energy: number;
   difficulty: number;
@@ -100,6 +102,8 @@ export const INITIAL_STATE: BoxerState = {
   password: "",
   userId: null,
   coachName: null,
+  wins: 0,
+  losses: 0,
   camp: null,
   energy: 0,
   difficulty: 0,

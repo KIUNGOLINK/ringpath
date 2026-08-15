@@ -29,9 +29,15 @@ export function PassportTab({ api }: { api: BoxerAppApi }) {
         <span>·</span>
         <span>{STANCE_LABELS[state.stance] ?? state.stance}</span>
       </div>
-      <div className="font-condensed text-7xl leading-[64px] font-bold text-obsidian">16–3</div>
+      <div className="font-condensed text-7xl leading-[64px] font-bold text-obsidian">
+        {state.wins}–{state.losses}
+      </div>
       <div className="text-xs tracking-[0.06em] text-smoke uppercase mb-4">Palmarès amateur</div>
-      <ConfirmedBadge label="CONFIRMÉ PAR LE COACH" />
+      {state.coachName ? (
+        <ConfirmedBadge label="CONFIRMÉ PAR LE COACH" />
+      ) : (
+        <div className="text-xs text-smoke">Pas encore confirmé par un coach</div>
+      )}
     </div>
   );
 }

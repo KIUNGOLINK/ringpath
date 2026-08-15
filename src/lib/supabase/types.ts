@@ -52,6 +52,8 @@ export interface Database {
           weight_kg: number | null;
           stance: Stance | null;
           coach_id: string | null;
+          wins: number;
+          losses: number;
           created_at: string;
         };
         Insert: {
@@ -59,11 +61,15 @@ export interface Database {
           weight_kg?: number | null;
           stance?: Stance | null;
           coach_id?: string | null;
+          wins?: number;
+          losses?: number;
         };
         Update: Partial<{
           weight_kg: number | null;
           stance: Stance | null;
           coach_id: string | null;
+          wins: number;
+          losses: number;
         }>;
         Relationships: [];
       };
