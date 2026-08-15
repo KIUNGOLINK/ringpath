@@ -1,6 +1,5 @@
 import Link from "next/link";
 import Image from "next/image";
-import { Logo } from "@/components/Logo";
 import { SparMark } from "@/components/spar/SparLogo";
 import { ArrowRightIcon } from "@/components/icons/Icon";
 
@@ -45,7 +44,10 @@ export default function WebHero() {
         />
 
         <header className="absolute top-0 left-0 right-0 h-[72px] flex items-center justify-between px-6 md:px-[72px]">
-          <Logo />
+          <div className="flex items-center gap-2.5">
+            <SparMark size={26} />
+            <span className="text-[19px] font-bold tracking-[-0.01em] text-bone">SPAR</span>
+          </div>
           <nav className="hidden md:flex items-center gap-8 text-sm font-medium text-bone">
             <a href="#comment-ca-marche" className="hover:text-mist transition-colors">
               Comment ça marche
@@ -65,10 +67,7 @@ export default function WebHero() {
         </header>
 
         <div className="absolute left-6 md:left-[72px] right-6 md:right-auto bottom-24 max-w-[900px]">
-          <div className="flex items-center gap-2.5 mb-5">
-            <SparMark size={22} />
-            <span className="text-[13px] font-semibold tracking-[0.05em] text-bone">SPAR PAR RINGPATH</span>
-          </div>
+          <div className="text-[13px] font-semibold tracking-[0.05em] text-fight-red mb-5">PAR RINGPATH</div>
           <h1 className="text-[40px] leading-[42px] md:text-[76px] md:leading-[76px] font-bold tracking-[-0.02em] text-bone mb-6">
             TROUVE TON
             <br />
