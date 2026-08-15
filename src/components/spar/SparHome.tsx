@@ -4,15 +4,9 @@ import { useEffect, useState } from "react";
 import { useRouter } from "next/navigation";
 import { createClient } from "@/lib/supabase/client";
 import { setAppMode, listSparSessions, listMySparSessions, listMyJoinRequests } from "@/lib/supabase/spar";
-import { ChevronLeftIcon } from "@/components/icons/Icon";
+import { ChevronLeftIcon, ChevronRightIcon } from "@/components/icons/Icon";
 import { SparMark } from "./SparLogo";
-
-const MODE_LABELS: Record<string, string> = { OPEN_ROUNDS: "OPEN ROUNDS", CAMP_SPAR: "CAMP SPAR" };
-
-function formatDate(dateStr: string) {
-  const d = new Date(dateStr + "T00:00:00");
-  return d.toLocaleDateString("fr-FR", { weekday: "short", day: "numeric", month: "short" }).toUpperCase();
-}
+import { SparSessionCard } from "./SparSessionCard";
 
 export function SparHome() {
   const router = useRouter();
@@ -98,18 +92,20 @@ export function SparHome() {
         )}
       </div>
 
-      <div className="flex gap-3 mb-8">
+      <div className="flex gap-3 mb-3">
         <button
           onClick={() => router.push("/app/spar/find")}
-          className="flex-1 h-[88px] rounded-card bg-fight-red text-pure-white text-[13px] font-semibold cursor-pointer flex flex-col items-center justify-center gap-1.5"
+          className="flex-1 h-24 rounded-card bg-fight-red text-pure-white cursor-pointer flex flex-col items-center justify-center gap-1"
         >
-          <span>Trouver un sparring</span>
+          <span className="font-condensed text-xl font-bold tracking-[-0.01em]">TROUVER</span>
+          <span className="text-[12px] font-medium opacity-90">Un sparring près de toi</span>
         </button>
         <button
           onClick={() => requireAuth(() => router.push("/app/spar/create"))}
-          className="flex-1 h-[88px] rounded-card bg-carbon border border-steel text-bone text-[13px] font-semibold cursor-pointer flex flex-col items-center justify-center gap-1.5"
+          className="flex-1 h-24 rounded-card bg-carbon border border-steel text-bone cursor-pointer flex flex-col items-center justify-center gap-1"
         >
-          <span>Créer un sparring</span>
+          <span className="font-condensed text-xl font-bold tracking-[-0.01em]">CRÉER</span>
+          <span className="text-[12px] font-medium text-smoke">Organise ta session</span>
         </button>
       </div>
 
@@ -124,59 +120,59 @@ export function SparHome() {
         <div className="text-smoke text-sm">Chargement…</div>
       ) : (
         <>
-          <Section title="PRÈS DE TOI">
+          <div className="mb-7">
+            <div className="flex items-center justify-between mb-3">
+              <div className="text-xs font-semibold tracking-[0.05em] text-smoke">PRÈS DE TOI</div>
+              {nearby.length > 0 && (
+                <button
+                  onClick={() => router.push("/app/spar/find")}
+                  className="text-xs font-semibold text-smoke bg-transparent border-none cursor-pointer flex items-center gap-0.5"
+                >
+                  Tout voir <ChevronRightIcon size={14} />
+                </button>
+              )}
+            </div>
             {nearby.length === 0 ? (
-              <>
+              <div className="bg-carbon rounded-card p-5">
                 <div className="text-bone text-sm mb-1">Aucun sparring à proximité pour l&rsquo;instant.</div>
                 <div className="text-smoke text-[13px]">Sois le premier à créer une session dans ta zone.</div>
-              </>
+              </div>
             ) : (
-              <div className="flex flex-col gap-2.5 -m-5">
+              <div className="flex flex-col gap-2.5">
                 {nearby.map((s) => (
-                  <button
-                    key={s.id}
-                    onClick={() => router.push(`/app/spar/session/${s.id}`)}
-                    className="text-left p-4 bg-transparent border-none border-b border-steel last:border-b-0 cursor-pointer"
-                  >
-                    <div className="text-[11px] font-semibold tracking-[0.05em] text-smoke mb-1">{MODE_LABELS[s.mode]}</div>
-                    <div className="text-bone font-semibold text-sm mb-1">
-                      {formatDate(s.session_date)} · {s.start_time.slice(0, 5)}
-                    </div>
-                    <div className="text-smoke text-[13px]">
-                      {s.city}
-                      {s.min_weight_kg && s.max_weight_kg ? ` · ${s.min_weight_kg}–${s.max_weight_kg} KG` : ""}
-                    </div>
-                  </button>
+                  <SparSessionCard key={s.id} session={s} onClick={() => router.push(`/app/spar/session/${s.id}`)} />
                 ))}
               </div>
             )}
-          </Section>
+          </div>
 
           {userId ? (
             <>
-              <Section title="TES DEMANDES">
-                {requests.length === 0 ? (
-                  <div className="text-smoke text-sm">Aucune demande en attente.</div>
-                ) : (
-                  <div className="text-bone text-sm">{requests.length} en attente</div>
-                )}
-              </Section>
+              {requests.length > 0 && (
+                <div className="mb-7">
+                  <div className="text-xs font-semibold tracking-[0.05em] text-smoke mb-3">TES DEMANDES</div>
+                  <button
+                    onClick={() => router.push("/app/spar/requests")}
+                    className="w-full text-left bg-carbon rounded-card p-4 flex items-center justify-between cursor-pointer border-none"
+                  >
+                    <span className="text-bone text-sm font-semibold">
+                      {requests.length} demande{requests.length > 1 ? "s" : ""} en attente
+                    </span>
+                    <ChevronRightIcon size={16} className="text-smoke" />
+                  </button>
+                </div>
+              )}
 
-              <Section title="À VENIR">
-                {upcoming.length === 0 ? (
-                  <div className="text-smoke text-sm">Rien de programmé.</div>
-                ) : (
-                  upcoming.map((s) => (
-                    <button
-                      key={s.id}
-                      onClick={() => router.push(`/app/spar/session/${s.id}`)}
-                      className="block w-full text-left bg-transparent border-none cursor-pointer text-bone text-sm mb-1"
-                    >
-                      {formatDate(s.session_date)} · {s.start_time.slice(0, 5)} — {s.city}
-                    </button>
-                  ))
-                )}
-              </Section>
+              {upcoming.length > 0 && (
+                <div className="mb-7">
+                  <div className="text-xs font-semibold tracking-[0.05em] text-smoke mb-3">À VENIR</div>
+                  <div className="flex flex-col gap-2.5">
+                    {upcoming.map((s) => (
+                      <SparSessionCard key={s.id} session={s} onClick={() => router.push(`/app/spar/session/${s.id}`)} />
+                    ))}
+                  </div>
+                </div>
+              )}
 
               <button
                 onClick={() => router.push("/app/spar/history")}
@@ -195,15 +191,6 @@ export function SparHome() {
           )}
         </>
       )}
-    </div>
-  );
-}
-
-function Section({ title, children, last = false }: { title: string; children: React.ReactNode; last?: boolean }) {
-  return (
-    <div className={last ? "" : "mb-7"}>
-      <div className="text-xs font-semibold tracking-[0.05em] text-smoke mb-3">{title}</div>
-      <div className="bg-carbon rounded-card p-5">{children}</div>
     </div>
   );
 }
