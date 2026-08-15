@@ -5,6 +5,7 @@ import { useRouter } from "next/navigation";
 import { createClient } from "@/lib/supabase/client";
 import { setAppMode, listSparSessions, listMySparSessions, listMyJoinRequests } from "@/lib/supabase/spar";
 import { ChevronLeftIcon } from "@/components/icons/Icon";
+import { SparMark } from "./SparLogo";
 
 const MODE_LABELS: Record<string, string> = { OPEN_ROUNDS: "OPEN ROUNDS", CAMP_SPAR: "CAMP SPAR" };
 
@@ -76,6 +77,7 @@ export function SparHome() {
               <ChevronLeftIcon size={18} />
             </button>
           )}
+          <SparMark size={28} />
           <div className="text-[26px] font-bold text-bone tracking-[-0.01em]">SPAR</div>
         </div>
         {userId ? (
