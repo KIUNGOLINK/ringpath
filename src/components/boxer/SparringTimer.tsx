@@ -21,11 +21,13 @@ function DraggableStepper({
   display,
   onDecrement,
   onIncrement,
+  isLast,
 }: {
   label: string;
   display: string;
   onDecrement: () => void;
   onIncrement: () => void;
+  isLast?: boolean;
 }) {
   const [active, setActive] = useState(false);
   const startYRef = useRef(0);
@@ -53,8 +55,8 @@ function DraggableStepper({
   }
 
   return (
-    <div className="flex flex-col items-center gap-2">
-      <div className="text-[11px] tracking-[0.06em] text-smoke">{label}</div>
+    <div className={`flex items-center justify-between py-3.5 ${isLast ? "" : "border-b border-steel"}`}>
+      <div className="text-[13px] tracking-[0.06em] text-smoke">{label}</div>
       <div className="flex items-center gap-2">
         <button
           onClick={onDecrement}
@@ -66,7 +68,7 @@ function DraggableStepper({
           onPointerDown={handlePointerDown}
           onPointerMove={handlePointerMove}
           onPointerUp={() => setActive(false)}
-          className={`font-condensed text-2xl font-bold text-bone w-[72px] h-[52px] rounded-md flex flex-col items-center justify-center cursor-ns-resize select-none touch-none ${
+          className={`font-condensed text-lg font-bold text-bone w-[76px] h-11 rounded-md flex items-center justify-center cursor-ns-resize select-none touch-none ${
             active ? "bg-steel" : "bg-graphite"
           }`}
         >
@@ -118,29 +120,28 @@ export function SparringTimer({ api }: { api: BoxerAppApi }) {
         </div>
 
         {canConfigure && (
-          <>
-            <div className="flex gap-6 mt-2">
-              <DraggableStepper
-                label="ROUNDS"
-                display={String(timer.totalRounds)}
-                onDecrement={() => api.setTimerRounds(Math.max(ROUND_MIN, timer.totalRounds - 1))}
-                onIncrement={() => api.setTimerRounds(Math.min(ROUND_MAX, timer.totalRounds + 1))}
-              />
-              <DraggableStepper
-                label="TRAVAIL"
-                display={formatClock(timer.workSeconds)}
-                onDecrement={() => adjustWork(Math.max(WORK_MIN, timer.workSeconds - WORK_STEP))}
-                onIncrement={() => adjustWork(Math.min(WORK_MAX, timer.workSeconds + WORK_STEP))}
-              />
-              <DraggableStepper
-                label="REPOS"
-                display={formatClock(timer.restSeconds)}
-                onDecrement={() => api.setTimerRest(Math.max(REST_MIN, timer.restSeconds - REST_STEP))}
-                onIncrement={() => api.setTimerRest(Math.min(REST_MAX, timer.restSeconds + REST_STEP))}
-              />
-            </div>
-            <div className="text-[11px] text-smoke -mt-2">Fais glisser un chiffre pour l&rsquo;ajuster</div>
-          </>
+          <div className="w-full max-w-xs px-8 mt-2">
+            <DraggableStepper
+              label="ROUNDS"
+              display={String(timer.totalRounds)}
+              onDecrement={() => api.setTimerRounds(Math.max(ROUND_MIN, timer.totalRounds - 1))}
+              onIncrement={() => api.setTimerRounds(Math.min(ROUND_MAX, timer.totalRounds + 1))}
+            />
+            <DraggableStepper
+              label="TRAVAIL"
+              display={formatClock(timer.workSeconds)}
+              onDecrement={() => adjustWork(Math.max(WORK_MIN, timer.workSeconds - WORK_STEP))}
+              onIncrement={() => adjustWork(Math.min(WORK_MAX, timer.workSeconds + WORK_STEP))}
+            />
+            <DraggableStepper
+              label="REPOS"
+              display={formatClock(timer.restSeconds)}
+              onDecrement={() => api.setTimerRest(Math.max(REST_MIN, timer.restSeconds - REST_STEP))}
+              onIncrement={() => api.setTimerRest(Math.min(REST_MAX, timer.restSeconds + REST_STEP))}
+              isLast
+            />
+            <div className="text-[11px] text-smoke mt-3 text-center">Fais glisser un chiffre pour l&rsquo;ajuster</div>
+          </div>
         )}
       </div>
 
