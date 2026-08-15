@@ -17,6 +17,7 @@ const HIDDEN_PREFIXES = ["/app", "/coach"];
 
 export function DemoNav() {
   const pathname = usePathname();
+  if (pathname === "/") return null;
   if (HIDDEN_PREFIXES.some((prefix) => pathname.startsWith(prefix))) return null;
   return (
     <nav
