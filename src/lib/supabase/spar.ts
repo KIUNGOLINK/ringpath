@@ -141,6 +141,16 @@ export async function getSparSession(supabase: Client, id: string) {
   };
 }
 
+export async function getMyRequestForSession(supabase: Client, sparSessionId: string, userId: string) {
+  const { data } = await supabase
+    .from("spar_join_requests")
+    .select()
+    .eq("spar_session_id", sparSessionId)
+    .eq("requester_id", userId)
+    .maybeSingle();
+  return data;
+}
+
 export async function requestToJoin(supabase: Client, sparSessionId: string, requesterId: string, message?: string) {
   const { error } = await supabase
     .from("spar_join_requests")
