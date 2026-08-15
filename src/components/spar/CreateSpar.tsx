@@ -15,6 +15,51 @@ const INTENSITIES: { key: SparIntensity; label: string; description: string }[] 
   { key: "COMPETITION_PREP", label: "PRÉPA COMPÉT", description: "Préparation compétiteur" },
 ];
 const OPEN_ROUNDS_DEFAULT_CAPACITY = 5;
+const CITIES = ["Paris", "Lyon", "Marseille", "Toulouse", "Nice", "Nantes", "Strasbourg", "Montpellier", "Bordeaux", "Lille", "Rennes"];
+const VENUE_SUGGESTIONS: Record<string, string[]> = {
+  Paris: ["Fight Room"],
+};
+
+function CitySelect({ value, onChange }: { value: string; onChange: (v: string) => void }) {
+  const [customMode, setCustomMode] = useState(value !== "" && !CITIES.includes(value));
+  return (
+    <div>
+      <div className="text-[13px] font-medium text-mist mb-2">Ville / zone</div>
+      <select
+        value={customMode ? "__custom__" : value}
+        onChange={(e) => {
+          if (e.target.value === "__custom__") {
+            setCustomMode(true);
+            onChange("");
+          } else {
+            setCustomMode(false);
+            onChange(e.target.value);
+          }
+        }}
+        className="w-full h-[52px] rounded-md bg-[#141414] border border-steel px-4 text-[15px] text-bone outline-none focus:border-verified appearance-none"
+      >
+        <option value="" disabled>
+          Choisir une ville
+        </option>
+        {CITIES.map((c) => (
+          <option key={c} value={c}>
+            {c}
+          </option>
+        ))}
+        <option value="__custom__">Autre ville…</option>
+      </select>
+      {customMode && (
+        <input
+          type="text"
+          value={value}
+          onChange={(e) => onChange(e.target.value)}
+          placeholder="Ta ville"
+          className="w-full h-[46px] rounded-md bg-[#141414] border border-steel px-4 text-[15px] text-bone placeholder:text-smoke outline-none focus:border-verified mt-2.5"
+        />
+      )}
+    </div>
+  );
+}
 
 function Field({
   label,
@@ -181,8 +226,23 @@ export function CreateSpar() {
             <Field label="Heure" value={startTime} onChange={setStartTime} placeholder="17:30" type="time" />
           </div>
         </div>
-        <Field label="Ville / zone" value={city} onChange={setCity} placeholder="Paris" />
-        <Field label="Salle (optionnel)" value={venueName} onChange={setVenueName} placeholder="Fight Room Belleville" />
+        <CitySelect value={city} onChange={setCity} />
+        <div>
+          <Field label="Salle (optionnel)" value={venueName} onChange={setVenueName} placeholder="Fight Room Belleville" />
+          {(VENUE_SUGGESTIONS[city] ?? []).length > 0 && (
+            <div className="flex flex-wrap gap-2 mt-2.5">
+              {VENUE_SUGGESTIONS[city].map((v) => (
+                <button
+                  key={v}
+                  onClick={() => setVenueName(v)}
+                  className="px-3 py-1.5 rounded-pill bg-graphite border border-steel text-bone text-xs cursor-pointer"
+                >
+                  {v}
+                </button>
+              ))}
+            </div>
+          )}
+        </div>
       </div>
 
       {isCampSpar && (
