@@ -103,3 +103,18 @@ export function ArrowRightIcon({ size = 16, ...props }: IconProps) {
     </svg>
   );
 }
+
+export function GloveIcon({ size = 20, ...props }: IconProps) {
+  return (
+    <svg {...base(size, props)}>
+      <path
+        d="M8 11V7.5a2.5 2.5 0 015 0V9a3 3 0 013 3v3.5a5 5 0 01-5 5h-2a4.5 4.5 0 01-4.5-4.5V13a2 2 0 012-2h1.5z"
+        stroke="currentColor"
+        strokeWidth="1.75"
+        strokeLinecap="round"
+        strokeLinejoin="round"
+      />
+      <path d="M8 11v3.5" stroke="currentColor" strokeWidth="1.75" strokeLinecap="round" />
+    </svg>
+  );
+}
