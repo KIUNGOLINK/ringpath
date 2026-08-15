@@ -27,8 +27,11 @@ export async function signUpBoxer(
     password: params.password,
   });
   if (error) throw error;
+  // Supabase always returns a `user`, even when email confirmation is pending —
+  // `session` is what's actually null in that case. Without a session there's no
+  // JWT yet, so any insert below would fail RLS with a 401.
   const userId = data.user?.id;
-  if (!userId) return { needsEmailConfirmation: true };
+  if (!userId || !data.session) return { needsEmailConfirmation: true };
 
   let coachId: string | null = null;
   if (params.clubCode.trim()) {
@@ -92,7 +95,7 @@ export async function signUpCoach(
   });
   if (error) throw error;
   const userId = data.user?.id;
-  if (!userId) return { needsEmailConfirmation: true, clubCode: null };
+  if (!userId || !data.session) return { needsEmailConfirmation: true, clubCode: null };
 
   const { error: profileError } = await supabase.from("profiles").insert({
     id: userId,
