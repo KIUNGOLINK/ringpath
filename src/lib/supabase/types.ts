@@ -54,6 +54,7 @@ export interface Database {
           coach_id: string | null;
           wins: number;
           losses: number;
+          photo_url: string | null;
           created_at: string;
         };
         Insert: {
@@ -63,6 +64,7 @@ export interface Database {
           coach_id?: string | null;
           wins?: number;
           losses?: number;
+          photo_url?: string | null;
         };
         Update: Partial<{
           weight_kg: number | null;
@@ -70,6 +72,7 @@ export interface Database {
           coach_id: string | null;
           wins: number;
           losses: number;
+          photo_url: string | null;
         }>;
         Relationships: [];
       };

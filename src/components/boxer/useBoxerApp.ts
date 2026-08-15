@@ -2,9 +2,10 @@
 
 import { useCallback, useEffect, useRef, useState } from "react";
 import { createClient } from "@/lib/supabase/client";
-import { completeSession, getBoxerBundle, signUpBoxer } from "@/lib/supabase/queries";
+import { completeSession, getBoxerBundle, joinClub, signUpBoxer, updateBoxerPhoto } from "@/lib/supabase/queries";
 import { translateAuthError } from "@/lib/authErrors";
-import { BoxerState, INITIAL_STATE, INITIAL_TIMER, Stance, Tab, CampTab, Session } from "./types";
+import { playBell, playWarning } from "@/lib/timerSounds";
+import { BoxerState, INITIAL_STATE, INITIAL_TIMER, Stance, Tab, CampTab, Session, TimerState } from "./types";
 
 function formatTime(iso: string) {
   const d = new Date(iso);
@@ -30,6 +31,7 @@ export function useBoxerApp() {
         coachName,
         wins: boxer?.wins ?? 0,
         losses: boxer?.losses ?? 0,
+        photoUrl: boxer?.photo_url ?? null,
         camp: camp
           ? {
               id: camp.id,
@@ -50,6 +52,9 @@ export function useBoxerApp() {
             sessionType: sess.session_type,
             durationMinutes: sess.duration_minutes,
             objective: sess.objective,
+            scheduledFor: sess.scheduled_for,
+            energy: sess.energy,
+            difficulty: sess.difficulty,
           })
         ),
       }));
@@ -78,22 +83,28 @@ export function useBoxerApp() {
     };
   }, []);
 
+  const timerRef = useRef<TimerState>(state.timer);
+  useEffect(() => {
+    timerRef.current = state.timer;
+  }, [state.timer]);
+
   useEffect(() => {
     if (!state.timer.running) return;
     const id = setInterval(() => {
-      setState((s) => {
-        const t = s.timer;
-        if (t.seconds > 1) {
-          return { ...s, timer: { ...t, seconds: t.seconds - 1 } };
-        }
-        if (!t.isRest) {
-          if (t.round >= t.totalRounds) {
-            return { ...s, timer: { ...t, running: false, seconds: 0 } };
-          }
-          return { ...s, timer: { ...t, isRest: true, seconds: t.restSeconds } };
-        }
-        return { ...s, timer: { ...t, isRest: false, round: t.round + 1, seconds: t.workSeconds } };
-      });
+      const t = timerRef.current;
+      let next: TimerState;
+      if (t.seconds > 1) {
+        next = { ...t, seconds: t.seconds - 1 };
+        if (next.seconds === 10) playWarning();
+      } else if (!t.isRest) {
+        next = t.round >= t.totalRounds ? { ...t, running: false, seconds: 0 } : { ...t, isRest: true, seconds: t.restSeconds };
+        playBell();
+      } else {
+        next = { ...t, isRest: false, round: t.round + 1, seconds: t.workSeconds };
+        playBell();
+      }
+      timerRef.current = next;
+      setState((s) => ({ ...s, timer: next }));
     }, 1000);
     return () => clearInterval(id);
   }, [state.timer.running]);
@@ -171,6 +182,36 @@ export function useBoxerApp() {
     setState({ ...INITIAL_STATE, screen: "onboarding" });
   }, [supabase]);
 
+  const reloadBundle = useCallback(async () => {
+    if (!state.userId) return;
+    await loadBundle(state.userId);
+  }, [state.userId, loadBundle]);
+
+  const uploadPhoto = useCallback(
+    async (file: File) => {
+      if (!state.userId) return;
+      const path = `${state.userId}/photo.jpg`;
+      const { error: uploadError } = await supabase.storage
+        .from("avatars")
+        .upload(path, file, { contentType: file.type || "image/jpeg", upsert: true });
+      if (uploadError) throw uploadError;
+      const { data } = supabase.storage.from("avatars").getPublicUrl(path);
+      const url = `${data.publicUrl}?t=${Date.now()}`;
+      await updateBoxerPhoto(supabase, state.userId, url);
+      await loadBundle(state.userId);
+    },
+    [supabase, state.userId, loadBundle]
+  );
+
+  const joinClubWithCode = useCallback(
+    async (code: string) => {
+      if (!state.userId) return;
+      await joinClub(supabase, state.userId, code);
+      await loadBundle(state.userId);
+    },
+    [supabase, state.userId, loadBundle]
+  );
+
   // ---- tabs ----
   const setActiveTab = useCallback((tab: Tab) => setState((s) => ({ ...s, activeTab: tab })), []);
   const setCampTab = useCallback((tab: CampTab) => setState((s) => ({ ...s, campTab: tab })), []);
@@ -243,14 +284,29 @@ export function useBoxerApp() {
     []
   );
   const toggleTimer = useCallback(() => {
-    setState((s) => {
-      const t = s.timer;
-      if (t.running) return { ...s, timer: { ...t, running: false } };
-      if (t.seconds > 0 || t.round < t.totalRounds) return { ...s, timer: { ...t, running: true } };
-      return s;
-    });
-  }, []);
+    const t = state.timer;
+    if (t.running) {
+      setState((s) => ({ ...s, timer: { ...s.timer, running: false } }));
+      return;
+    }
+    if (t.seconds > 0 || t.round < t.totalRounds) {
+      playBell();
+      setState((s) => ({ ...s, timer: { ...s.timer, running: true } }));
+    }
+  }, [state.timer]);
   const resetTimer = useCallback(() => setState((s) => ({ ...s, timer: { ...INITIAL_TIMER } })), []);
+  const setTimerRounds = useCallback(
+    (n: number) => setState((s) => ({ ...s, timer: { ...s.timer, totalRounds: n } })),
+    []
+  );
+  const setTimerWork = useCallback(
+    (seconds: number) => setState((s) => ({ ...s, timer: { ...s.timer, workSeconds: seconds, seconds } })),
+    []
+  );
+  const setTimerRest = useCallback(
+    (seconds: number) => setState((s) => ({ ...s, timer: { ...s.timer, restSeconds: seconds } })),
+    []
+  );
 
   return {
     state,
@@ -268,6 +324,9 @@ export function useBoxerApp() {
     enterApp,
     login,
     logout,
+    joinClubWithCode,
+    uploadPhoto,
+    reloadBundle,
     setActiveTab,
     setCampTab,
     openSession,
@@ -286,6 +345,9 @@ export function useBoxerApp() {
     closeSparringTimer,
     toggleTimer,
     resetTimer,
+    setTimerRounds,
+    setTimerWork,
+    setTimerRest,
   };
 }
 

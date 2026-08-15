@@ -1,4 +1,4 @@
-import { ImageSlot } from "@/components/ui/ImageSlot";
+import { useRef, useState } from "react";
 import { ConfirmedBadge } from "@/components/ui/StatusPill";
 import type { BoxerAppApi } from "./useBoxerApp";
 
@@ -11,15 +11,50 @@ export function PassportTab({ api }: { api: BoxerAppApi }) {
   const { state } = api;
   const displayFirstName = (state.firstName || "").toUpperCase();
   const displayLastName = (state.lastName || "").toUpperCase();
+  const inputRef = useRef<HTMLInputElement>(null);
+  const [uploading, setUploading] = useState(false);
+  const [error, setError] = useState<string | null>(null);
+
+  async function handleFileChange(e: React.ChangeEvent<HTMLInputElement>) {
+    const file = e.target.files?.[0];
+    e.target.value = "";
+    if (!file) return;
+    setUploading(true);
+    setError(null);
+    try {
+      await api.uploadPhoto(file);
+    } catch (err) {
+      setError(err instanceof Error ? err.message : "Une erreur est survenue.");
+    } finally {
+      setUploading(false);
+    }
+  }
 
   return (
     <div className="bg-passport-bg min-h-full px-5 pt-6 pb-12">
-      <ImageSlot
-        caption="portrait, 3:4, fond de salle"
-        radius={16}
-        className="w-full aspect-[3/4] mb-5"
-      />
-      <div className="text-4xl leading-[38px] font-bold text-obsidian mb-3">
+      <button
+        onClick={() => inputRef.current?.click()}
+        disabled={uploading}
+        className="relative w-full aspect-[3/4] mb-2 rounded-[16px] overflow-hidden cursor-pointer border-none p-0 bg-[#E9E6DF] flex items-center justify-center"
+      >
+        {state.photoUrl ? (
+          // eslint-disable-next-line @next/next/no-img-element
+          <img src={state.photoUrl} alt="" className="w-full h-full object-cover" />
+        ) : (
+          <span className="text-[13px] text-[#8A8578]">Ajouter une photo</span>
+        )}
+        {uploading && (
+          <div className="absolute inset-0 bg-black/40 flex items-center justify-center text-bone text-sm">
+            Envoi…
+          </div>
+        )}
+        <div className="absolute bottom-3 right-3 w-9 h-9 rounded-full bg-obsidian text-bone flex items-center justify-center text-lg">
+          {state.photoUrl ? "✎" : "+"}
+        </div>
+      </button>
+      <input ref={inputRef} type="file" accept="image/*" onChange={handleFileChange} className="hidden" />
+      {error && <div className="text-xs text-error mb-3">{error}</div>}
+      <div className="text-4xl leading-[38px] font-bold text-obsidian mb-3 mt-4">
         {displayFirstName}
         <br />
         {displayLastName}

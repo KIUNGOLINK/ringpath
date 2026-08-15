@@ -1,18 +1,27 @@
 import { useState } from "react";
 import { ChevronRightIcon } from "@/components/icons/Icon";
 import { createClient } from "@/lib/supabase/client";
-import { updateBoxerWeight, recordFightResult } from "@/lib/supabase/queries";
+import { updateBoxerWeight, recordFightResult, logTrainingSession } from "@/lib/supabase/queries";
+import type { SessionType } from "@/lib/supabase/types";
 import type { BoxerAppApi } from "./useBoxerApp";
 
 const ITEMS = [
-  { key: "training", label: "Entraînement", enabled: false },
+  { key: "training", label: "Entraînement", enabled: true },
   { key: "sparring", label: "Sparring", enabled: true },
   { key: "video", label: "Vidéo", enabled: false },
   { key: "result", label: "Résultat de combat", enabled: true },
   { key: "weight", label: "Poids", enabled: true },
 ];
 
-type Step = "menu" | "weight" | "result";
+const SESSION_TYPES: { key: SessionType; label: string }[] = [
+  { key: "Technical", label: "Technique" },
+  { key: "Pads", label: "Pao" },
+  { key: "Conditioning", label: "Préparation physique" },
+  { key: "Roadwork", label: "Endurance" },
+  { key: "Recovery", label: "Récupération" },
+];
+
+type Step = "menu" | "weight" | "result" | "training";
 
 export function AddSheet({ api }: { api: BoxerAppApi }) {
   const supabase = createClient();
@@ -37,6 +46,7 @@ export function AddSheet({ api }: { api: BoxerAppApi }) {
     setSaving(true);
     try {
       await updateBoxerWeight(supabase, api.state.userId, Number(weight));
+      await api.reloadBundle();
       setDone("Poids mis à jour.");
     } finally {
       setSaving(false);
@@ -48,7 +58,20 @@ export function AddSheet({ api }: { api: BoxerAppApi }) {
     setSaving(true);
     try {
       await recordFightResult(supabase, api.state.userId, result);
+      await api.reloadBundle();
       setDone(result === "win" ? "Victoire ajoutée à ton palmarès." : "Défaite ajoutée à ton palmarès.");
+    } finally {
+      setSaving(false);
+    }
+  }
+
+  async function saveTraining(type: SessionType) {
+    if (!api.state.camp) return;
+    setSaving(true);
+    try {
+      await logTrainingSession(supabase, api.state.camp.id, type);
+      await api.reloadBundle();
+      setDone("Séance ajoutée à ton parcours.");
     } finally {
       setSaving(false);
     }
@@ -89,6 +112,7 @@ export function AddSheet({ api }: { api: BoxerAppApi }) {
                   if (item.key === "sparring") api.openSparringFromSheet();
                   else if (item.key === "weight") setStep("weight");
                   else if (item.key === "result") setStep("result");
+                  else if (item.key === "training") setStep("training");
                 }}
                 className={`h-14 flex items-center justify-between text-bone text-base ${
                   item.enabled ? "cursor-pointer" : "opacity-40 cursor-default"
@@ -120,6 +144,22 @@ export function AddSheet({ api }: { api: BoxerAppApi }) {
             >
               {saving ? "Enregistrement…" : "Enregistrer"}
             </button>
+          </>
+        ) : step === "training" ? (
+          <>
+            <div className="text-bone text-[17px] font-semibold mb-4">Quel type de séance ?</div>
+            {SESSION_TYPES.map((t, i) => (
+              <button
+                key={t.key}
+                onClick={() => saveTraining(t.key)}
+                disabled={saving}
+                className={`w-full h-[52px] flex items-center text-left text-bone text-[15px] bg-transparent border-none cursor-pointer disabled:opacity-50 ${
+                  i < SESSION_TYPES.length - 1 ? "border-b border-steel" : ""
+                }`}
+              >
+                {t.label}
+              </button>
+            ))}
           </>
         ) : (
           <>

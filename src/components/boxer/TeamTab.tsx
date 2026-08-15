@@ -1,7 +1,26 @@
+import { useState } from "react";
 import type { BoxerAppApi } from "./useBoxerApp";
 
 export function TeamTab({ api }: { api: BoxerAppApi }) {
   const { state } = api;
+  const [code, setCode] = useState("");
+  const [submitting, setSubmitting] = useState(false);
+  const [error, setError] = useState<string | null>(null);
+
+  async function handleJoin(e: React.FormEvent) {
+    e.preventDefault();
+    setSubmitting(true);
+    setError(null);
+    try {
+      await api.joinClubWithCode(code);
+      setCode("");
+    } catch (err) {
+      setError(err instanceof Error ? err.message : "Une erreur est survenue.");
+    } finally {
+      setSubmitting(false);
+    }
+  }
+
   return (
     <div className="px-5 pb-8 pt-1">
       <div className="text-xl font-semibold text-bone mb-6">MON COIN</div>
@@ -14,8 +33,28 @@ export function TeamTab({ api }: { api: BoxerAppApi }) {
           </div>
         </div>
       ) : (
-        <div className="bg-carbon rounded-card p-5 text-[15px] text-smoke">
-          Aucun coach lié pour l&rsquo;instant. Demande le code de ton club et ajoute-le depuis les réglages.
+        <div className="bg-carbon rounded-card p-5">
+          <div className="text-[15px] text-smoke mb-4">
+            Aucun coach lié pour l&rsquo;instant. Entre le code de ton club pour le rejoindre.
+          </div>
+          <form onSubmit={handleJoin} className="flex gap-2.5">
+            <input
+              type="text"
+              value={code}
+              onChange={(e) => setCode(e.target.value)}
+              placeholder="ABC123"
+              autoCapitalize="characters"
+              className="flex-1 h-11 rounded-md bg-[#141414] border border-steel px-4 text-[15px] text-bone placeholder:text-smoke outline-none focus:border-verified"
+            />
+            <button
+              type="submit"
+              disabled={!code.trim() || submitting}
+              className="h-11 px-5 rounded-pill bg-bone text-obsidian text-sm font-semibold cursor-pointer disabled:opacity-50"
+            >
+              {submitting ? "…" : "Rejoindre"}
+            </button>
+          </form>
+          {error && <div className="text-sm text-error mt-3">{error}</div>}
         </div>
       )}
 

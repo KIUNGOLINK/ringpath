@@ -20,6 +20,9 @@ export interface Session {
   sessionType: string;
   durationMinutes: number | null;
   objective: string | null;
+  scheduledFor: string;
+  energy: number | null;
+  difficulty: number | null;
 }
 
 export interface Camp {
@@ -66,6 +69,7 @@ export interface BoxerState {
   coachName: string | null;
   wins: number;
   losses: number;
+  photoUrl: string | null;
   camp: Camp | null;
   energy: number;
   difficulty: number;
@@ -107,6 +111,7 @@ export const INITIAL_STATE: BoxerState = {
   coachName: null,
   wins: 0,
   losses: 0,
+  photoUrl: null,
   camp: null,
   energy: 0,
   difficulty: 0,

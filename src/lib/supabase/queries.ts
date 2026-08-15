@@ -1,5 +1,5 @@
 import type { SupabaseClient } from "@supabase/supabase-js";
-import type { Database, Stance } from "./types";
+import type { Database, SessionType, Stance } from "./types";
 
 type Client = SupabaseClient<Database>;
 
@@ -171,6 +171,7 @@ export async function getCoachRoster(supabase: Client, coachId: string) {
       stance: b.stance,
       camp: camp
         ? {
+            id: camp.id,
             opponentName: camp.opponent_name,
             fightDate: camp.fight_date,
             weekCurrent: camp.week_current,
@@ -181,12 +182,57 @@ export async function getCoachRoster(supabase: Client, coachId: string) {
   });
 }
 
+export async function getFighterSessions(supabase: Client, campId: string) {
+  const { data } = await supabase
+    .from("sessions")
+    .select()
+    .eq("camp_id", campId)
+    .order("scheduled_for", { ascending: true });
+  return data ?? [];
+}
+
 export async function getCoachInfo(supabase: Client, coachId: string) {
   const [{ data: profile }, { data: coach }] = await Promise.all([
     supabase.from("profiles").select().eq("id", coachId).single(),
     supabase.from("coaches").select().eq("profile_id", coachId).single(),
   ]);
   return { profile, coach };
+}
+
+export async function joinClub(supabase: Client, userId: string, clubCode: string) {
+  const { data: coach, error: lookupError } = await supabase
+    .from("coaches")
+    .select("profile_id")
+    .eq("club_code", clubCode.trim().toUpperCase())
+    .maybeSingle();
+  if (lookupError) throw lookupError;
+  if (!coach) throw new Error("Code club introuvable.");
+  const { error } = await supabase.from("boxers").update({ coach_id: coach.profile_id }).eq("profile_id", userId);
+  if (error) throw error;
+}
+
+const SESSION_TYPE_LABELS: Record<SessionType, string> = {
+  Technical: "Technique",
+  Pads: "Pao",
+  Sparring: "Sparring",
+  Conditioning: "Préparation physique",
+  Roadwork: "Endurance",
+  Recovery: "Récupération",
+};
+
+export async function logTrainingSession(supabase: Client, campId: string, sessionType: SessionType) {
+  const { error } = await supabase.from("sessions").insert({
+    camp_id: campId,
+    title: SESSION_TYPE_LABELS[sessionType],
+    session_type: sessionType,
+    completed: true,
+  });
+  if (error) throw error;
+}
+
+export async function updateBoxerPhoto(supabase: Client, userId: string, photoUrl: string) {
+  const { error } = await supabase.from("boxers").update({ photo_url: photoUrl }).eq("profile_id", userId);
+  if (error) throw error;
 }
 
 export async function updateBoxerWeight(supabase: Client, userId: string, weightKg: number) {

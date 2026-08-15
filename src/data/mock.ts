@@ -61,43 +61,12 @@ export const scoutingFighters = [
   },
 ];
 
-export const seasonCalendar = [
-  {
-    title: "Championnats de France Amateurs Seniors — Qualifications",
-    date: "10–11 Jan 2026",
-    location: "Paris (Stade Max Rousié)",
-  },
-  {
-    title: "Championnats de France Amateurs Seniors — Demi-finales",
-    date: "17–18 Jan 2026",
-    location: "Maisnil-lès-Ruitz (Parc départemental d'Olhain)",
-  },
-  {
-    title: "Championnats de France Amateurs Seniors — Finales",
-    date: "24 Jan 2026",
-    location: "La Rochelle (Salle Gaston Neveur)",
-  },
-  {
-    title: "CFA Juniors · CNA Cadets · CNA Minimes",
-    date: "14–15 Feb 2026",
-    location: "Maisnil-lès-Ruitz (Parc départemental d'Olhain)",
-  },
-  {
-    title: "Date limite — Championnats Régionaux BEA",
-    date: "5 Apr 2026",
-    location: "",
-  },
-  {
-    title: "Critérium National BEA — Masculin",
-    date: "22–24 May 2026",
-    location: "Bourges (CREPS Centre Val de Loire)",
-  },
-  {
-    title: "Critérium National BEA — Féminin",
-    date: "29–31 May 2026",
-    location: "Bourges (CREPS Centre Val de Loire)",
-  },
-];
+// The 2025-2026 season (which these dates covered) has ended. FFBoxe had not
+// published the 2026-2027 national calendar as of Aug 2026 — check
+// ffboxe.com/actualites/calendrier-des-competitions-nationales/ and refill
+// this list once it's out, rather than showing stale dates as current.
+export const seasonCalendarSeason = "2026–2027";
+export const seasonCalendar: { title: string; date: string; location: string }[] = [];
 
 export const sessionLibrary = [
   { label: "Échauffement", detail: "10 min" },

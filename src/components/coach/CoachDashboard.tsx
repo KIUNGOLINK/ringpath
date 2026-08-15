@@ -3,7 +3,9 @@
 import { useEffect, useState } from "react";
 import { useRouter } from "next/navigation";
 import { createClient } from "@/lib/supabase/client";
-import { getCoachInfo, getCoachRoster } from "@/lib/supabase/queries";
+import { getCoachInfo, getCoachRoster, getFighterSessions } from "@/lib/supabase/queries";
+import { analyzeWeek, type WeeklySession } from "@/lib/weeklyAnalysis";
+import { WeeklyAnalysisCard } from "@/components/ui/WeeklyAnalysisCard";
 import { BellIcon, ChevronLeftIcon } from "@/components/icons/Icon";
 
 type CoachTab = "dashboard" | "roster" | "builder";
@@ -48,6 +50,7 @@ export function CoachDashboard() {
   const [fighterId, setFighterId] = useState<string | null>(null);
   const [day, setDay] = useState<Day>("MON");
   const [campPlan, setCampPlan] = useState<Partial<Record<Day, string>>>({});
+  const [fighterSessions, setFighterSessions] = useState<WeeklySession[]>([]);
 
   useEffect(() => {
     let cancelled = false;
@@ -73,11 +76,33 @@ export function CoachDashboard() {
     };
   }, [supabase, router]);
 
+  const fighter = roster.find((f) => f.profileId === fighterId);
+
+  const fighterCampId = fighter?.camp?.id;
+  useEffect(() => {
+    if (!fighterCampId) return;
+    let cancelled = false;
+    getFighterSessions(supabase, fighterCampId).then((sessions) => {
+      if (cancelled) return;
+      setFighterSessions(
+        sessions.map((s) => ({
+          scheduledFor: s.scheduled_for,
+          completed: s.completed,
+          sessionType: s.session_type,
+          energy: s.energy,
+          difficulty: s.difficulty,
+        }))
+      );
+    });
+    return () => {
+      cancelled = true;
+    };
+  }, [supabase, fighterCampId]);
+
   if (loading) {
     return <div className="px-6 md:px-[72px] py-16 text-smoke">Chargement…</div>;
   }
 
-  const fighter = roster.find((f) => f.profileId === fighterId);
   const activeCamps = roster.filter((f) => f.camp);
 
   return (
@@ -182,9 +207,12 @@ export function CoachDashboard() {
               <span className="text-[13px] text-[#474747]">Parcours</span>
             </div>
             {fighter.camp ? (
-              <div className="text-smoke text-sm">
-                Camp vs {fighter.camp.opponentName} — semaine {fighter.camp.weekCurrent}/{fighter.camp.weekTotal}
-              </div>
+              <>
+                <div className="text-smoke text-sm mb-6">
+                  Camp vs {fighter.camp.opponentName} — semaine {fighter.camp.weekCurrent}/{fighter.camp.weekTotal}
+                </div>
+                <WeeklyAnalysisCard analysis={analyzeWeek(fighterSessions, daysUntil(fighter.camp.fightDate))} />
+              </>
             ) : (
               <div className="text-smoke text-sm">Aucun camp actif.</div>
             )}
