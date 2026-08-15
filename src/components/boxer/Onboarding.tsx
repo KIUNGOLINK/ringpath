@@ -1,5 +1,4 @@
 import { LogoMark } from "@/components/Logo";
-import { ImageSlot } from "@/components/ui/ImageSlot";
 import type { BoxerAppApi } from "./useBoxerApp";
 
 export function Onboarding({ api }: { api: BoxerAppApi }) {
@@ -13,8 +12,9 @@ export function Onboarding({ api }: { api: BoxerAppApi }) {
 function OnboardStep0({ api }: { api: BoxerAppApi }) {
   return (
     <div className="absolute inset-0 bg-passport-bg flex flex-col">
-      <div className="flex-1 m-5 mt-5 rounded-lg overflow-hidden">
-        <ImageSlot caption="photo portrait — boxeur, vertical" className="w-full h-full" radius={24} />
+      <div className="flex-1 m-5 mt-5 rounded-lg overflow-hidden bg-obsidian flex flex-col items-center justify-center gap-4">
+        <LogoMark size={120} color="#F5F3EE" />
+        <span className="text-2xl font-semibold tracking-[-0.02em] text-bone">RINGPATH</span>
       </div>
       <div className="px-6 pt-8 pb-10">
         <div className="text-4xl font-bold text-obsidian leading-[40px] mb-2">CONSTRUIS TON CHEMIN.</div>
