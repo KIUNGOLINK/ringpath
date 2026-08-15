@@ -168,13 +168,23 @@ export function SparSessionDetail({ id }: { id: string }) {
               href={s.payment_link_url}
               target="_blank"
               rel="noopener noreferrer"
-              className="block text-center h-[46px] leading-[46px] rounded-pill bg-bone text-obsidian text-sm font-semibold no-underline"
+              className="block text-center h-[46px] leading-[46px] rounded-pill bg-bone text-obsidian text-sm font-semibold no-underline mb-2.5"
             >
               Payer {(s.venue_price_eur / s.max_participants).toFixed(2)} €
             </a>
           )}
+          <div className="text-[11px] text-[#6b6b6b] leading-tight">
+            Paiement direct entre vous — RingPath n&rsquo;encaisse rien et décline toute responsabilité en cas de non-paiement.
+          </div>
         </div>
       )}
+
+      <button
+        onClick={() => router.push("/app/spar/timer")}
+        className="w-full h-12 rounded-pill border border-steel text-bone text-sm font-semibold cursor-pointer mb-5"
+      >
+        Lancer le minuteur
+      </button>
 
       {error && <div className="text-sm text-error mb-4">{error}</div>}
 

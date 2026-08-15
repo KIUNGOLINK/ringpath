@@ -1,5 +1,6 @@
 import { useRouter } from "next/navigation";
 import { LogoMark } from "@/components/Logo";
+import { ChevronLeftIcon } from "@/components/icons/Icon";
 import type { BoxerAppApi } from "./useBoxerApp";
 
 export function Onboarding({ api }: { api: BoxerAppApi }) {
@@ -50,7 +51,13 @@ function OnboardStep0({ api }: { api: BoxerAppApi }) {
 
 function OnboardStep1({ api }: { api: BoxerAppApi }) {
   return (
-    <div className="absolute inset-0 bg-obsidian px-5 pt-16 pb-6">
+    <div className="absolute inset-0 bg-obsidian px-5 pt-14 pb-6">
+      <button
+        onClick={() => api.goToStep(0)}
+        className="w-11 h-11 -ml-2.5 flex items-center justify-center cursor-pointer bg-transparent border-none text-bone mb-1"
+      >
+        <ChevronLeftIcon />
+      </button>
       <div className="h-0.5 bg-steel rounded-full mb-8">
         <div className="w-1/5 h-full bg-bone rounded-full" />
       </div>
@@ -84,7 +91,13 @@ function OnboardStep2({ api }: { api: BoxerAppApi }) {
   const { state } = api;
   const isSpar = state.sparIntent;
   return (
-    <div className="absolute inset-0 bg-obsidian px-5 pt-16 pb-6 overflow-y-auto">
+    <div className="absolute inset-0 bg-obsidian px-5 pt-14 pb-6 overflow-y-auto">
+      <button
+        onClick={() => api.goToStep(isSpar ? 0 : 1)}
+        className="w-11 h-11 -ml-2.5 flex items-center justify-center cursor-pointer bg-transparent border-none text-bone mb-1"
+      >
+        <ChevronLeftIcon />
+      </button>
       <div className="h-0.5 bg-steel rounded-full mb-8">
         <div className={`${isSpar ? "w-1/2" : "w-2/3"} h-full bg-bone rounded-full`} />
       </div>
@@ -92,7 +105,7 @@ function OnboardStep2({ api }: { api: BoxerAppApi }) {
       <div className="text-[28px] font-bold text-bone mb-1">TES INFOS</div>
       {isSpar && (
         <div className="text-[13px] text-smoke mb-8">
-          Ton poids et ta garde servent à te proposer les bons partenaires.
+          Ton poids sert à te proposer les bons partenaires.
         </div>
       )}
       {!isSpar && <div className="mb-8" />}
@@ -100,24 +113,26 @@ function OnboardStep2({ api }: { api: BoxerAppApi }) {
         <Field label="Prénom" value={state.firstName} onChange={api.setFirstName} placeholder="Nadia" />
         <Field label="Nom" value={state.lastName} onChange={api.setLastName} placeholder="Kader" />
         <Field label="Catégorie de poids (kg)" value={state.weight} onChange={api.setWeight} placeholder="71" />
-        <div>
-          <div className="text-[13px] font-medium text-mist mb-2">Garde</div>
-          <div className="flex gap-3">
-            {(["ORTHODOX", "SOUTHPAW"] as const).map((s) => (
-              <button
-                key={s}
-                onClick={() => api.setStance(s)}
-                className={`flex-1 h-11 rounded-pill text-[13px] font-semibold cursor-pointer transition-colors ${
-                  state.stance === s
-                    ? "bg-bone text-obsidian border-none"
-                    : "bg-transparent text-bone border border-[#474747]"
-                }`}
-              >
-                {s === "ORTHODOX" ? "ORTHODOXE" : "GAUCHER"}
-              </button>
-            ))}
+        {!isSpar && (
+          <div>
+            <div className="text-[13px] font-medium text-mist mb-2">Garde</div>
+            <div className="flex gap-3">
+              {(["ORTHODOX", "SOUTHPAW"] as const).map((s) => (
+                <button
+                  key={s}
+                  onClick={() => api.setStance(s)}
+                  className={`flex-1 h-11 rounded-pill text-[13px] font-semibold cursor-pointer transition-colors ${
+                    state.stance === s
+                      ? "bg-bone text-obsidian border-none"
+                      : "bg-transparent text-bone border border-[#474747]"
+                  }`}
+                >
+                  {s === "ORTHODOX" ? "ORTHODOXE" : "GAUCHER"}
+                </button>
+              ))}
+            </div>
           </div>
-        </div>
+        )}
         {!isSpar && (
           <Field
             label="Code club (optionnel)"
@@ -149,20 +164,28 @@ function OnboardStep2({ api }: { api: BoxerAppApi }) {
 function OnboardStep3({ api }: { api: BoxerAppApi }) {
   const { state } = api;
   return (
-    <div className="absolute inset-0 bg-obsidian flex flex-col items-center justify-center px-6 text-center">
-      <div className="text-[28px] font-bold text-bone tracking-[-0.01em] mb-8">
-        TON CHEMIN COMMENCE ICI.
-      </div>
-      {state.authError && (
-        <div className="text-sm text-error mb-4">{state.authError}</div>
-      )}
+    <div className="absolute inset-0 bg-obsidian px-5 pt-14">
       <button
-        onClick={api.enterApp}
-        disabled={state.authSubmitting}
-        className="w-full h-[52px] rounded-pill bg-bone text-obsidian text-[15px] font-semibold cursor-pointer disabled:opacity-50"
+        onClick={() => api.goToStep(2)}
+        className="w-11 h-11 -ml-2.5 flex items-center justify-center cursor-pointer bg-transparent border-none text-bone"
       >
-        {state.authSubmitting ? "Création du compte…" : "Entrer dans RingPath"}
+        <ChevronLeftIcon />
       </button>
+      <div className="flex flex-col items-center justify-center px-1 text-center" style={{ height: "calc(100% - 100px)" }}>
+        <div className="text-[28px] font-bold text-bone tracking-[-0.01em] mb-8">
+          TON CHEMIN COMMENCE ICI.
+        </div>
+        {state.authError && (
+          <div className="text-sm text-error mb-4">{state.authError}</div>
+        )}
+        <button
+          onClick={api.enterApp}
+          disabled={state.authSubmitting}
+          className="w-full h-[52px] rounded-pill bg-bone text-obsidian text-[15px] font-semibold cursor-pointer disabled:opacity-50"
+        >
+          {state.authSubmitting ? "Création du compte…" : "Entrer dans RingPath"}
+        </button>
+      </div>
     </div>
   );
 }
@@ -170,7 +193,13 @@ function OnboardStep3({ api }: { api: BoxerAppApi }) {
 export function Login({ api }: { api: BoxerAppApi }) {
   const { state } = api;
   return (
-    <div className="absolute inset-0 bg-obsidian px-5 pt-16 pb-6 flex flex-col">
+    <div className="absolute inset-0 bg-obsidian px-5 pt-14 pb-6 flex flex-col">
+      <button
+        onClick={api.goToOnboarding}
+        className="w-11 h-11 -ml-2.5 flex items-center justify-center cursor-pointer bg-transparent border-none text-bone mb-3"
+      >
+        <ChevronLeftIcon />
+      </button>
       <div className="flex items-center gap-3 mb-8">
         <LogoMark size={24} />
         <span className="text-[15px] font-semibold text-bone">RINGPATH</span>

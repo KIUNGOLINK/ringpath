@@ -198,6 +198,11 @@ export function useBoxerApp() {
       return;
     }
     if (data.session?.user) {
+      if (state.sparIntent) {
+        await setAppMode(supabase, data.session.user.id, "spar");
+        router.push("/app/spar");
+        return;
+      }
       const mode = await getAppMode(supabase, data.session.user.id);
       if (mode === "spar") {
         router.push("/app/spar");
@@ -206,7 +211,7 @@ export function useBoxerApp() {
       await loadBundle(data.session.user.id);
     }
     setState((s) => ({ ...s, authSubmitting: false }));
-  }, [supabase, router, state.email, state.password, loadBundle]);
+  }, [supabase, router, state.email, state.password, state.sparIntent, loadBundle]);
 
   const logout = useCallback(async () => {
     await supabase.auth.signOut();

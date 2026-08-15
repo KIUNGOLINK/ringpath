@@ -4,6 +4,7 @@ import { useEffect, useState } from "react";
 import { useRouter } from "next/navigation";
 import { createClient } from "@/lib/supabase/client";
 import { setAppMode, listSparSessions, listMySparSessions, listMyJoinRequests } from "@/lib/supabase/spar";
+import { ChevronLeftIcon } from "@/components/icons/Icon";
 
 const MODE_LABELS: Record<string, string> = { OPEN_ROUNDS: "OPEN ROUNDS", CAMP_SPAR: "CAMP SPAR" };
 
@@ -66,7 +67,17 @@ export function SparHome() {
   return (
     <div className="min-h-screen bg-obsidian px-5 pt-16 pb-12 max-w-md mx-auto">
       <div className="flex items-center justify-between mb-8">
-        <div className="text-[26px] font-bold text-bone tracking-[-0.01em]">SPAR</div>
+        <div className="flex items-center gap-1">
+          {!userId && (
+            <button
+              onClick={() => router.push("/app")}
+              className="w-8 h-8 -ml-2 flex items-center justify-center cursor-pointer bg-transparent border-none text-bone"
+            >
+              <ChevronLeftIcon size={18} />
+            </button>
+          )}
+          <div className="text-[26px] font-bold text-bone tracking-[-0.01em]">SPAR</div>
+        </div>
         {userId ? (
           <button
             onClick={switchToCompet}
@@ -99,6 +110,13 @@ export function SparHome() {
           <span>Créer un sparring</span>
         </button>
       </div>
+
+      <button
+        onClick={() => router.push("/app/spar/timer")}
+        className="w-full h-11 rounded-pill border border-steel text-bone text-[13px] font-semibold cursor-pointer mb-7"
+      >
+        Minuteur
+      </button>
 
       {loading ? (
         <div className="text-smoke text-sm">Chargement…</div>
