@@ -64,6 +64,7 @@ export interface BoxerState {
   clubCode: string;
   email: string;
   password: string;
+  sparIntent: boolean;
   // populated once signed in
   userId: string | null;
   coachName: string | null;
@@ -107,6 +108,7 @@ export const INITIAL_STATE: BoxerState = {
   clubCode: "",
   email: "",
   password: "",
+  sparIntent: false,
   userId: null,
   coachName: null,
   wins: 0,

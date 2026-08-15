@@ -1,11 +1,24 @@
 import { useState } from "react";
+import { useRouter } from "next/navigation";
+import { createClient } from "@/lib/supabase/client";
+import { setAppMode } from "@/lib/supabase/spar";
 import type { BoxerAppApi } from "./useBoxerApp";
 
 export function TeamTab({ api }: { api: BoxerAppApi }) {
   const { state } = api;
+  const router = useRouter();
+  const supabase = createClient();
   const [code, setCode] = useState("");
   const [submitting, setSubmitting] = useState(false);
   const [error, setError] = useState<string | null>(null);
+  const [switching, setSwitching] = useState(false);
+
+  async function switchToSpar() {
+    if (!state.userId) return;
+    setSwitching(true);
+    await setAppMode(supabase, state.userId, "spar");
+    router.push("/app/spar");
+  }
 
   async function handleJoin(e: React.FormEvent) {
     e.preventDefault();
@@ -59,8 +72,16 @@ export function TeamTab({ api }: { api: BoxerAppApi }) {
       )}
 
       <button
+        onClick={switchToSpar}
+        disabled={switching}
+        className="mt-8 h-11 px-5 rounded-pill border border-fight-red text-fight-red text-sm font-semibold cursor-pointer disabled:opacity-50"
+      >
+        {switching ? "…" : "Passer sur Spar →"}
+      </button>
+
+      <button
         onClick={api.logout}
-        className="mt-8 h-11 px-5 rounded-pill border border-steel text-bone text-sm font-semibold cursor-pointer"
+        className="mt-3 h-11 px-5 rounded-pill border border-steel text-bone text-sm font-semibold cursor-pointer block"
       >
         Se déconnecter
       </button>

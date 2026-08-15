@@ -1,8 +1,10 @@
 "use client";
 
 import { useCallback, useEffect, useRef, useState } from "react";
+import { useRouter } from "next/navigation";
 import { createClient } from "@/lib/supabase/client";
 import { completeSession, getBoxerBundle, joinClub, signUpBoxer, updateBoxerPhoto } from "@/lib/supabase/queries";
+import { getAppMode, setAppMode } from "@/lib/supabase/spar";
 import { translateAuthError } from "@/lib/authErrors";
 import { playBell, playWarning } from "@/lib/timerSounds";
 import { BoxerState, INITIAL_STATE, INITIAL_TIMER, Stance, Tab, CampTab, Session, TimerState } from "./types";
@@ -15,6 +17,7 @@ function formatTime(iso: string) {
 export function useBoxerApp() {
   const [state, setState] = useState<BoxerState>(INITIAL_STATE);
   const supabase = createClient();
+  const router = useRouter();
   const toastTimeoutRef = useRef<ReturnType<typeof setTimeout> | null>(null);
 
   const loadBundle = useCallback(
@@ -64,9 +67,15 @@ export function useBoxerApp() {
 
   useEffect(() => {
     let cancelled = false;
-    supabase.auth.getSession().then(({ data }) => {
+    supabase.auth.getSession().then(async ({ data }) => {
       if (cancelled) return;
       if (data.session?.user) {
+        const mode = await getAppMode(supabase, data.session.user.id);
+        if (cancelled) return;
+        if (mode === "spar") {
+          router.replace("/app/spar");
+          return;
+        }
         loadBundle(data.session.user.id);
       } else {
         setState((s) => ({ ...s, screen: "onboarding" }));
@@ -75,7 +84,7 @@ export function useBoxerApp() {
     return () => {
       cancelled = true;
     };
-  }, [supabase, loadBundle]);
+  }, [supabase, router, loadBundle]);
 
   useEffect(() => {
     return () => {
@@ -152,7 +161,14 @@ export function useBoxerApp() {
         return;
       }
       const { data } = await supabase.auth.getSession();
-      if (data.session?.user) await loadBundle(data.session.user.id);
+      if (data.session?.user) {
+        if (state.sparIntent) {
+          await setAppMode(supabase, data.session.user.id, "spar");
+          router.push("/app/spar");
+          return;
+        }
+        await loadBundle(data.session.user.id);
+      }
       setState((s) => ({ ...s, authSubmitting: false }));
     } catch (err) {
       setState((s) => ({
@@ -161,7 +177,9 @@ export function useBoxerApp() {
         authError: err instanceof Error ? translateAuthError(err.message) : "Une erreur est survenue. Réessaie.",
       }));
     }
-  }, [supabase, state.email, state.password, state.firstName, state.lastName, state.weight, state.stance, state.clubCode, loadBundle]);
+  }, [supabase, router, state.email, state.password, state.firstName, state.lastName, state.weight, state.stance, state.clubCode, state.sparIntent, loadBundle]);
+
+  const setSparIntent = useCallback((intent: boolean) => setState((s) => ({ ...s, sparIntent: intent })), []);
 
   const login = useCallback(async () => {
     setState((s) => ({ ...s, authSubmitting: true, authError: null }));
@@ -173,9 +191,16 @@ export function useBoxerApp() {
       setState((s) => ({ ...s, authSubmitting: false, authError: translateAuthError(error.message) }));
       return;
     }
-    if (data.session?.user) await loadBundle(data.session.user.id);
+    if (data.session?.user) {
+      const mode = await getAppMode(supabase, data.session.user.id);
+      if (mode === "spar") {
+        router.push("/app/spar");
+        return;
+      }
+      await loadBundle(data.session.user.id);
+    }
     setState((s) => ({ ...s, authSubmitting: false }));
-  }, [supabase, state.email, state.password, loadBundle]);
+  }, [supabase, router, state.email, state.password, loadBundle]);
 
   const logout = useCallback(async () => {
     await supabase.auth.signOut();
@@ -330,6 +355,7 @@ export function useBoxerApp() {
     login,
     logout,
     joinClubWithCode,
+    setSparIntent,
     uploadPhoto,
     reloadBundle,
     setActiveTab,

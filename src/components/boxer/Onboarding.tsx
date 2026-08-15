@@ -20,10 +20,22 @@ function OnboardStep0({ api }: { api: BoxerAppApi }) {
         <div className="text-4xl font-bold text-obsidian leading-[40px] mb-2">CONSTRUIS TON CHEMIN.</div>
         <div className="text-[15px] text-smoke mb-6">Entraînement. Compétition. Carrière.</div>
         <button
-          onClick={() => api.goToStep(1)}
-          className="w-full h-[52px] rounded-pill bg-obsidian text-bone text-[15px] font-semibold cursor-pointer mb-3"
+          onClick={() => {
+            api.setSparIntent(false);
+            api.goToStep(1);
+          }}
+          className="w-full h-[52px] rounded-pill bg-obsidian text-bone text-[15px] font-semibold cursor-pointer mb-2.5"
         >
-          Commencer
+          RingPath Compét
+        </button>
+        <button
+          onClick={() => {
+            api.setSparIntent(true);
+            api.goToStep(2);
+          }}
+          className="w-full h-[52px] rounded-pill bg-fight-red text-pure-white text-[15px] font-semibold cursor-pointer mb-3"
+        >
+          Spar
         </button>
         <button
           onClick={api.goToLogin}
