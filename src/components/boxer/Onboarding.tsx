@@ -80,11 +80,12 @@ function OnboardStep1({ api }: { api: BoxerAppApi }) {
 
 function OnboardStep2({ api }: { api: BoxerAppApi }) {
   const { state } = api;
+  const router = useRouter();
   const isSpar = state.sparIntent;
   return (
     <div className="absolute inset-0 bg-obsidian px-5 pt-14 pb-6 overflow-y-auto">
       <button
-        onClick={() => api.goToStep(isSpar ? 0 : 1)}
+        onClick={() => (isSpar ? router.push("/app/spar") : api.goToStep(1))}
         className="w-11 h-11 -ml-2.5 flex items-center justify-center cursor-pointer bg-transparent border-none text-bone mb-1"
       >
         <ChevronLeftIcon />
