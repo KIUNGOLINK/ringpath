@@ -66,7 +66,7 @@ export default function WebHero() {
             >
               Trouver un sparring
             </Link>
-            <Link href="/app" className="text-[15px] font-semibold text-bone hover:text-mist transition-colors">
+            <Link href="/app?intent=spar&login=1" className="text-[15px] font-semibold text-bone hover:text-mist transition-colors">
               Se connecter
             </Link>
           </div>
