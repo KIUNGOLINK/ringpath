@@ -1,7 +1,7 @@
 import Link from "next/link";
 import Image from "next/image";
 import { SparMark } from "@/components/spar/SparLogo";
-import { ArrowRightIcon, GloveIcon } from "@/components/icons/Icon";
+import { GloveIcon } from "@/components/icons/Icon";
 
 const INSTAGRAM_URL =
   "https://www.instagram.com/spar.ringpath?igsh=MWJydjNlc2U3ZHFxcA%3D%3D&utm_source=qr";
@@ -69,9 +69,6 @@ export default function WebHero() {
             <Link href="/app" className="text-[15px] font-semibold text-bone hover:text-mist transition-colors">
               Se connecter
             </Link>
-            <a href="#comment-ca-marche" className="inline-flex items-center gap-1.5 text-[15px] font-semibold text-bone hover:gap-2.5 transition-all">
-              Comment ça marche <ArrowRightIcon size={16} />
-            </a>
           </div>
         </div>
       </div>
