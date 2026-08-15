@@ -300,7 +300,12 @@ export function useBoxerApp() {
     []
   );
   const setTimerWork = useCallback(
-    (seconds: number) => setState((s) => ({ ...s, timer: { ...s.timer, workSeconds: seconds, seconds } })),
+    (seconds: number) =>
+      setState((s) => {
+        const t = s.timer;
+        const syncDisplay = !t.isRest && t.seconds === t.workSeconds;
+        return { ...s, timer: { ...t, workSeconds: seconds, seconds: syncDisplay ? seconds : t.seconds } };
+      }),
     []
   );
   const setTimerRest = useCallback(
