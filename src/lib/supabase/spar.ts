@@ -74,6 +74,9 @@ export type SparDiscoveryFilters = {
   city?: string;
   mode?: SparMode | "ALL";
   fromDate?: string;
+  intensity?: SparIntensity | "ALL";
+  stance?: Stance | "ALL";
+  weightKg?: number;
 };
 
 export async function listSparSessions(supabase: Client, filters: SparDiscoveryFilters = {}) {
@@ -87,6 +90,13 @@ export async function listSparSessions(supabase: Client, filters: SparDiscoveryF
   if (filters.city) query = query.ilike("city", `%${filters.city}%`);
   if (filters.mode && filters.mode !== "ALL") query = query.eq("mode", filters.mode);
   if (filters.fromDate) query = query.gte("session_date", filters.fromDate);
+  if (filters.intensity && filters.intensity !== "ALL") query = query.eq("intensity", filters.intensity);
+  if (filters.stance && filters.stance !== "ALL") query = query.or(`requested_stance.eq.${filters.stance},requested_stance.eq.ANY,requested_stance.is.null`);
+  if (filters.weightKg != null) {
+    query = query
+      .or(`min_weight_kg.is.null,min_weight_kg.lte.${filters.weightKg}`)
+      .or(`max_weight_kg.is.null,max_weight_kg.gte.${filters.weightKg}`);
+  }
 
   const { data, error } = await query;
   if (error) throw error;
