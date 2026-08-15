@@ -1,5 +1,6 @@
 import { useRouter } from "next/navigation";
 import { LogoMark } from "@/components/Logo";
+import { SparMark } from "@/components/spar/SparLogo";
 import { ChevronLeftIcon } from "@/components/icons/Icon";
 import type { BoxerAppApi } from "./useBoxerApp";
 
@@ -143,9 +144,15 @@ function OnboardStep2({ api }: { api: BoxerAppApi }) {
       <button
         onClick={() => api.goToStep(3)}
         disabled={!state.firstName || !state.email || state.password.length < 6}
-        className="w-full h-[52px] rounded-pill bg-bone text-obsidian text-[15px] font-semibold cursor-pointer disabled:opacity-35 disabled:cursor-not-allowed"
+        className="w-full h-[52px] rounded-pill bg-bone text-obsidian text-[15px] font-semibold cursor-pointer disabled:opacity-35 disabled:cursor-not-allowed mb-4"
       >
         Continuer
+      </button>
+      <button
+        onClick={api.goToLogin}
+        className="w-full h-11 bg-transparent text-bone text-sm font-semibold cursor-pointer"
+      >
+        J&rsquo;ai déjà un compte
       </button>
     </div>
   );
@@ -153,6 +160,7 @@ function OnboardStep2({ api }: { api: BoxerAppApi }) {
 
 function OnboardStep3({ api }: { api: BoxerAppApi }) {
   const { state } = api;
+  const isSpar = state.sparIntent;
   return (
     <div className="absolute inset-0 bg-obsidian px-5 pt-14">
       <button
@@ -173,7 +181,7 @@ function OnboardStep3({ api }: { api: BoxerAppApi }) {
           disabled={state.authSubmitting}
           className="w-full h-[52px] rounded-pill bg-bone text-obsidian text-[15px] font-semibold cursor-pointer disabled:opacity-50"
         >
-          {state.authSubmitting ? "Création du compte…" : "Entrer dans RingPath"}
+          {state.authSubmitting ? "Création du compte…" : isSpar ? "Entrer dans Spar" : "Entrer dans RingPath"}
         </button>
       </div>
     </div>
@@ -182,6 +190,7 @@ function OnboardStep3({ api }: { api: BoxerAppApi }) {
 
 export function Login({ api }: { api: BoxerAppApi }) {
   const { state } = api;
+  const isSpar = state.sparIntent;
   return (
     <div className="absolute inset-0 bg-obsidian px-5 pt-14 pb-6 flex flex-col">
       <button
@@ -191,8 +200,8 @@ export function Login({ api }: { api: BoxerAppApi }) {
         <ChevronLeftIcon />
       </button>
       <div className="flex items-center gap-3 mb-8">
-        <LogoMark size={24} />
-        <span className="text-[15px] font-semibold text-bone">RINGPATH</span>
+        {isSpar ? <SparMark size={24} /> : <LogoMark size={24} />}
+        <span className="text-[15px] font-semibold text-bone">{isSpar ? "SPAR" : "RINGPATH"}</span>
       </div>
       <div className="text-[28px] font-bold text-bone mb-8">CONTENT DE TE REVOIR</div>
       <div className="flex flex-col gap-4 mb-6">

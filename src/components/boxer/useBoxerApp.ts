@@ -141,7 +141,13 @@ export function useBoxerApp() {
   const setPassword = useCallback((v: string) => setState((s) => ({ ...s, password: v })), []);
   const goToLogin = useCallback(() => setState((s) => ({ ...s, screen: "login", authError: null })), []);
   const goToOnboarding = useCallback(
-    () => setState((s) => ({ ...s, screen: "onboarding", onboardStep: 0, authError: null })),
+    () =>
+      setState((s) => ({
+        ...s,
+        screen: "onboarding",
+        onboardStep: s.sparIntent ? 2 : 0,
+        authError: null,
+      })),
     []
   );
 

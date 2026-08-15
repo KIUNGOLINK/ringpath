@@ -104,6 +104,21 @@ export function ArrowRightIcon({ size = 16, ...props }: IconProps) {
   );
 }
 
+export function LocationIcon({ size = 20, ...props }: IconProps) {
+  return (
+    <svg {...base(size, props)}>
+      <path
+        d="M12 21s7-6.5 7-11.5A7 7 0 105 9.5C5 14.5 12 21 12 21z"
+        stroke="currentColor"
+        strokeWidth="1.75"
+        strokeLinecap="round"
+        strokeLinejoin="round"
+      />
+      <circle cx="12" cy="9.5" r="2.25" stroke="currentColor" strokeWidth="1.75" />
+    </svg>
+  );
+}
+
 export function GloveIcon({ size = 20, ...props }: IconProps) {
   return (
     <svg {...base(size, props)}>

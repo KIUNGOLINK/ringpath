@@ -4,8 +4,9 @@ import { useEffect, useState } from "react";
 import { useRouter } from "next/navigation";
 import { createClient } from "@/lib/supabase/client";
 import { listSparSessions } from "@/lib/supabase/spar";
-import { ChevronLeftIcon, SearchIcon } from "@/components/icons/Icon";
+import { ChevronLeftIcon, SearchIcon, LocationIcon } from "@/components/icons/Icon";
 import { SparSessionCard } from "./SparSessionCard";
+import { nearestCity } from "@/lib/sparCities";
 import type { SparMode } from "@/lib/supabase/types";
 
 const MODE_FILTERS: { key: SparMode | "ALL"; label: string }[] = [
@@ -21,6 +22,28 @@ export function FindSpar() {
   const [mode, setMode] = useState<SparMode | "ALL">("ALL");
   const [loading, setLoading] = useState(true);
   const [results, setResults] = useState<Awaited<ReturnType<typeof listSparSessions>>>([]);
+  const [locating, setLocating] = useState(false);
+  const [locationError, setLocationError] = useState<string | null>(null);
+
+  function useMyLocation() {
+    if (!navigator.geolocation) {
+      setLocationError("Localisation indisponible sur cet appareil, entre ta ville.");
+      return;
+    }
+    setLocating(true);
+    setLocationError(null);
+    navigator.geolocation.getCurrentPosition(
+      (pos) => {
+        setCity(nearestCity(pos.coords.latitude, pos.coords.longitude));
+        setLocating(false);
+      },
+      () => {
+        setLocationError("Position refusée, entre ta ville manuellement.");
+        setLocating(false);
+      },
+      { timeout: 10000 }
+    );
+  }
 
   useEffect(() => {
     let cancelled = false;
@@ -47,15 +70,24 @@ export function FindSpar() {
         <div className="text-[17px] font-semibold text-bone">Trouver un sparring</div>
       </div>
 
-      <div className="px-5 mb-3 relative">
+      <div className="px-5 mb-1 relative">
         <SearchIcon size={17} className="absolute left-4 top-1/2 -translate-y-1/2 text-smoke pointer-events-none" />
         <input
           value={city}
           onChange={(e) => setCity(e.target.value)}
           placeholder="Filtrer par ville…"
-          className="w-full h-[46px] rounded-pill bg-carbon border border-steel pl-11 pr-4 text-[15px] text-bone placeholder:text-smoke outline-none focus:border-verified"
+          className="w-full h-[46px] rounded-pill bg-carbon border border-steel pl-11 pr-11 text-[15px] text-bone placeholder:text-smoke outline-none focus:border-verified"
         />
+        <button
+          onClick={useMyLocation}
+          disabled={locating}
+          aria-label="Utiliser ma position"
+          className="absolute right-2 top-1/2 -translate-y-1/2 w-8 h-8 rounded-pill flex items-center justify-center cursor-pointer bg-transparent border-none text-fight-red disabled:opacity-50"
+        >
+          <LocationIcon size={18} />
+        </button>
       </div>
+      <div className="px-5 mb-3 min-h-[18px] text-[13px] text-smoke">{locationError}</div>
 
       <div className="px-5 flex gap-2 mb-6 overflow-x-auto">
         {MODE_FILTERS.map((f) => (

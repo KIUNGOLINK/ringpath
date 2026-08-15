@@ -55,10 +55,7 @@ export function SparSessionDetail({ id }: { id: string }) {
 
   async function handleRequest() {
     if (!userId) {
-      const wantsLogin = window.confirm(
-        "Il te faut un compte pour rejoindre ce sparring. OK pour te connecter, Annuler pour créer un compte Spar."
-      );
-      router.push(wantsLogin ? "/app?intent=spar&login=1" : "/app?intent=spar");
+      router.push("/app?intent=spar");
       return;
     }
     setSubmitting(true);

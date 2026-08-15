@@ -53,10 +53,7 @@ export function SparHome() {
       onAuthenticated();
       return;
     }
-    const wantsLogin = window.confirm(
-      "Il te faut un compte pour continuer. OK pour te connecter, Annuler pour créer un compte Spar."
-    );
-    router.push(wantsLogin ? "/app?intent=spar&login=1" : "/app?intent=spar");
+    router.push("/app?intent=spar");
   }
 
   return (
@@ -65,7 +62,7 @@ export function SparHome() {
         <div className="flex items-center gap-1">
           {!userId && (
             <button
-              onClick={() => router.push("/app")}
+              onClick={() => router.push("/")}
               className="w-8 h-8 -ml-2 flex items-center justify-center cursor-pointer bg-transparent border-none text-bone"
             >
               <ChevronLeftIcon size={18} />

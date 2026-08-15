@@ -6,6 +6,7 @@ import { createClient } from "@/lib/supabase/client";
 import { createSparSession } from "@/lib/supabase/spar";
 import { getBoxerBundle } from "@/lib/supabase/queries";
 import { ChevronLeftIcon } from "@/components/icons/Icon";
+import { CITIES } from "@/lib/sparCities";
 import type { SparMode, SparIntensity } from "@/lib/supabase/types";
 
 const LEVELS = ["Débutant", "Intermédiaire", "Avancé", "Compétiteur amateur", "Amateur élite"];
@@ -15,7 +16,6 @@ const INTENSITIES: { key: SparIntensity; label: string; description: string }[] 
   { key: "COMPETITION_PREP", label: "PRÉPA COMPÉT", description: "Préparation compétiteur" },
 ];
 const OPEN_ROUNDS_DEFAULT_CAPACITY = 5;
-const CITIES = ["Paris", "Lyon", "Marseille", "Toulouse", "Nice", "Nantes", "Strasbourg", "Montpellier", "Bordeaux", "Lille", "Rennes"];
 const VENUE_SUGGESTIONS: Record<string, string[]> = {
   Paris: ["Fight Room"],
 };
@@ -153,10 +153,7 @@ export function CreateSpar() {
     const { data } = await supabase.auth.getSession();
     const userId = data.session?.user.id;
     if (!userId) {
-      const wantsLogin = window.confirm(
-        "Il te faut un compte pour publier un sparring. OK pour te connecter, Annuler pour créer un compte Spar."
-      );
-      router.push(wantsLogin ? "/app?intent=spar&login=1" : "/app?intent=spar");
+      router.push("/app?intent=spar");
       return;
     }
     if (!sessionDate || !startTime || !city) return;
