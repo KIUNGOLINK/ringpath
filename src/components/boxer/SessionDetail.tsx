@@ -19,14 +19,14 @@ export function SessionDetail({ api }: { api: BoxerAppApi }) {
       </div>
 
       <div className="text-[11px] font-semibold tracking-[0.05em] text-smoke mb-2">
-        CAMP · WEEK 4 · TODAY {session?.time}
+        AUJOURD&rsquo;HUI {session?.time}
       </div>
-      <div className="text-sm text-mist mb-6">Duration: 75 min</div>
+      <div className="text-sm text-mist mb-6">Durée : 75 min</div>
 
-      <div className="text-xs font-semibold tracking-[0.05em] text-smoke mb-2">OBJECTIVE</div>
-      <div className="text-base text-bone mb-8">Improve lateral exits after 1–2.</div>
+      <div className="text-xs font-semibold tracking-[0.05em] text-smoke mb-2">OBJECTIF</div>
+      <div className="text-base text-bone mb-8">Améliorer les sorties latérales après le 1-2.</div>
 
-      <div className="text-xs font-semibold tracking-[0.05em] text-smoke mb-3">SESSION</div>
+      <div className="text-xs font-semibold tracking-[0.05em] text-smoke mb-3">SÉANCE</div>
       <div className="flex flex-col gap-px bg-steel rounded-card overflow-hidden mb-8">
         {sessionLibrary.map((item) => (
           <div key={item.label} className="bg-carbon px-4 py-3.5 flex justify-between text-sm text-bone">
@@ -44,7 +44,7 @@ export function SessionDetail({ api }: { api: BoxerAppApi }) {
           onClick={api.startOrComplete}
           className="w-full h-[52px] rounded-pill bg-bone text-obsidian text-[15px] font-semibold cursor-pointer"
         >
-          {state.sessionPhase === "detail" ? "START SESSION" : "Complete Session"}
+          {state.sessionPhase === "detail" ? "COMMENCER LA SÉANCE" : "Terminer la séance"}
         </button>
       </div>
     </div>

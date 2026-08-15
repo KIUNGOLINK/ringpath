@@ -45,12 +45,14 @@ export function BottomNav({ api }: { api: BoxerAppApi }) {
     >
       <button
         onClick={() => api.setActiveTab("home")}
+        aria-label="Accueil"
         className="w-11 h-11 flex items-center justify-center cursor-pointer bg-transparent border-none"
       >
         <HomeGlyph color={color("home")} />
       </button>
       <button
         onClick={() => api.setActiveTab("camp")}
+        aria-label="Camp"
         className="w-11 h-11 flex items-center justify-center cursor-pointer bg-transparent border-none"
       >
         <CampGlyph color={color("camp")} />
@@ -59,18 +61,20 @@ export function BottomNav({ api }: { api: BoxerAppApi }) {
         onClick={api.openAddSheet}
         className="w-12 h-12 rounded-full bg-bone border-none cursor-pointer flex items-center justify-center text-obsidian -translate-y-1"
         style={{ boxShadow: "0 4px 12px rgba(0,0,0,.4)" }}
-        aria-label="Add to your path"
+        aria-label="Ajouter à ton parcours"
       >
         <PlusIcon size={20} />
       </button>
       <button
         onClick={() => api.setActiveTab("team")}
+        aria-label="Mon coin"
         className="w-11 h-11 flex items-center justify-center cursor-pointer bg-transparent border-none"
       >
         <TeamGlyph color={color("team")} />
       </button>
       <button
         onClick={() => api.setActiveTab("passport")}
+        aria-label="Passeport"
         className="w-11 h-11 flex items-center justify-center cursor-pointer bg-transparent border-none"
       >
         <PassportGlyph color={color("passport")} />

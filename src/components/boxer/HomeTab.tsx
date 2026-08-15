@@ -18,7 +18,7 @@ export function HomeTab({ api }: { api: BoxerAppApi }) {
         <div className="flex items-center gap-3">
           <div className="w-8 h-8 rounded-full bg-steel" />
           <div>
-            <div className="text-xs text-smoke">GOOD EVENING,</div>
+            <div className="text-xs text-smoke">BONSOIR,</div>
             <div className="text-lg font-bold text-bone">{displayFirstName}</div>
           </div>
         </div>
@@ -31,14 +31,14 @@ export function HomeTab({ api }: { api: BoxerAppApi }) {
         <div className="absolute inset-0 p-5 flex flex-col justify-between">
           <div className="flex items-center gap-2">
             <span className="w-[3px] h-3.5 bg-fight-red" />
-            <span className="text-xs tracking-[0.06em] text-mist">NEXT FIGHT</span>
+            <span className="text-xs tracking-[0.06em] text-mist">PROCHAIN COMBAT</span>
           </div>
           {daysOut !== null ? (
             <div>
               <div className="font-condensed text-[64px] leading-[56px] font-bold text-bone">
                 {daysOut}
               </div>
-              <div className="text-[13px] text-smoke mb-2.5">DAYS</div>
+              <div className="text-[13px] text-smoke mb-2.5">JOURS</div>
               <div className="flex items-center justify-between text-sm text-bone">
                 <span>
                   {displayFirstName} <span className="text-smoke">vs</span> {state.camp?.opponentName}
@@ -47,18 +47,18 @@ export function HomeTab({ api }: { api: BoxerAppApi }) {
               </div>
             </div>
           ) : (
-            <div className="text-[15px] text-mist">No fight scheduled yet — talk to your coach.</div>
+            <div className="text-[15px] text-mist">Aucun combat programmé — parles-en à ton coach.</div>
           )}
         </div>
       </div>
 
       <div className="flex items-center justify-between mb-4">
-        <div className="text-xl font-semibold text-bone">TODAY</div>
-        <div className="text-[13px] text-smoke">View schedule</div>
+        <div className="text-xl font-semibold text-bone">AUJOURD&rsquo;HUI</div>
+        <div className="text-[13px] text-smoke">Voir le planning</div>
       </div>
 
       {state.sessions.length === 0 && (
-        <div className="text-[15px] text-smoke mb-6">No sessions yet. Tap + to add one.</div>
+        <div className="text-[15px] text-smoke mb-6">Aucune séance pour l&rsquo;instant. Appuie sur + pour en ajouter une.</div>
       )}
 
       {state.sessions.map((sess) => (
@@ -86,9 +86,9 @@ export function HomeTab({ api }: { api: BoxerAppApi }) {
       <div className="bg-graphite border-l-2 border-bone rounded-r-md p-4 flex gap-3 my-6">
         <div className="w-7 h-7 rounded-full bg-steel shrink-0" />
         <div>
-          <div className="text-xs text-smoke mb-1">{state.coachName ?? "No coach linked"}</div>
+          <div className="text-xs text-smoke mb-1">{state.coachName ?? "Aucun coach lié"}</div>
           <div className="text-[15px] text-bone">
-            {state.coachName ? "Stay behind your jab today." : "Ask your coach for their club code."}
+            {state.coachName ? "Reste derrière ton jab aujourd'hui." : "Demande le code de club à ton coach."}
           </div>
         </div>
       </div>
@@ -100,9 +100,9 @@ export function HomeTab({ api }: { api: BoxerAppApi }) {
           </div>
         </div>
         <div>
-          <div className="text-xs text-smoke">VIDEO REVIEW</div>
-          <div className="text-[15px] text-bone my-0.5">See it in action</div>
-          <div className="text-[13px] text-mist">Preview →</div>
+          <div className="text-xs text-smoke">VIDÉO REVIEW</div>
+          <div className="text-[15px] text-bone my-0.5">Voir en action</div>
+          <div className="text-[13px] text-mist">Aperçu →</div>
         </div>
       </div>
     </div>

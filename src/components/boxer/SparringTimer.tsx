@@ -4,7 +4,7 @@ import type { BoxerAppApi } from "./useBoxerApp";
 export function SparringTimer({ api }: { api: BoxerAppApi }) {
   const { timer } = api.state;
   const display = `${Math.floor(timer.seconds / 60)}:${String(timer.seconds % 60).padStart(2, "0")}`;
-  const buttonLabel = timer.running ? "PAUSE" : timer.seconds === 0 ? "DONE" : "START";
+  const buttonLabel = timer.running ? "PAUSE" : timer.seconds === 0 ? "TERMINÉ" : "DÉMARRER";
 
   return (
     <div className="absolute inset-0 bg-obsidian flex flex-col">
@@ -15,7 +15,7 @@ export function SparringTimer({ api }: { api: BoxerAppApi }) {
         >
           <ChevronLeftIcon />
         </button>
-        <div className="text-[17px] font-semibold text-bone">Sparring Timer</div>
+        <div className="text-[17px] font-semibold text-bone">Minuteur de sparring</div>
       </div>
 
       <div className="flex-1 flex flex-col items-center justify-center gap-6">
@@ -23,7 +23,7 @@ export function SparringTimer({ api }: { api: BoxerAppApi }) {
           className="text-[13px] font-bold tracking-[0.08em]"
           style={{ color: timer.isRest ? "#FFB020" : "#F5F3EE" }}
         >
-          {timer.isRest ? "REST" : "WORK"}
+          {timer.isRest ? "REPOS" : "TRAVAIL"}
         </div>
         <div className="font-condensed text-[110px] leading-[100px] font-bold text-bone">{display}</div>
         <div className="text-sm text-smoke">

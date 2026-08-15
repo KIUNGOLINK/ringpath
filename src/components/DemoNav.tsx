@@ -13,8 +13,11 @@ const LINKS = [
   { href: "/components", label: "Components" },
 ];
 
+const HIDDEN_PREFIXES = ["/app", "/coach"];
+
 export function DemoNav() {
   const pathname = usePathname();
+  if (HIDDEN_PREFIXES.some((prefix) => pathname.startsWith(prefix))) return null;
   return (
     <nav
       className="fixed bottom-4 left-1/2 -translate-x-1/2 z-[200] flex items-center gap-1 rounded-pill px-2 py-2 backdrop-blur-md overflow-x-auto max-w-[94vw]"

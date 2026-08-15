@@ -7,7 +7,7 @@ function Dots({ value, onSelect }: { value: number; onSelect: (n: number) => voi
         <button
           key={n}
           onClick={() => onSelect(n)}
-          aria-label={`${n} of 5`}
+          aria-label={`${n} sur 5`}
           className="w-8 h-8 rounded-full border-none cursor-pointer"
           style={{ background: n <= value ? "#F5F3EE" : "#292929" }}
         />
@@ -22,16 +22,16 @@ export function CompleteSheet({ api }: { api: BoxerAppApi }) {
     <div className="absolute inset-0 z-[100] flex items-end" style={{ background: "rgba(0,0,0,.6)" }}>
       <div className="w-full bg-carbon rounded-t-[24px] px-5 pt-3 pb-8">
         <div className="w-9 h-1 bg-steel rounded-full mx-auto mb-6" />
-        <div className="text-xl font-bold text-bone mb-6">HOW DID IT FEEL?</div>
-        <div className="text-[13px] text-smoke mb-2.5">Energy</div>
+        <div className="text-xl font-bold text-bone mb-6">COMMENT ÇA S&rsquo;EST PASSÉ ?</div>
+        <div className="text-[13px] text-smoke mb-2.5">Énergie</div>
         <Dots value={state.energy} onSelect={api.setEnergy} />
-        <div className="text-[13px] text-smoke mb-2.5">Difficulty</div>
+        <div className="text-[13px] text-smoke mb-2.5">Difficulté</div>
         <Dots value={state.difficulty} onSelect={api.setDifficulty} />
         <button
           onClick={api.finishSession}
           className="w-full h-[52px] rounded-pill bg-bone text-obsidian text-[15px] font-semibold cursor-pointer"
         >
-          Done
+          Terminer
         </button>
       </div>
     </div>

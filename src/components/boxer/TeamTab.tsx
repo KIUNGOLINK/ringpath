@@ -4,7 +4,7 @@ export function TeamTab({ api }: { api: BoxerAppApi }) {
   const { state } = api;
   return (
     <div className="px-5 pb-8 pt-1">
-      <div className="text-xl font-semibold text-bone mb-6">MY CORNER</div>
+      <div className="text-xl font-semibold text-bone mb-6">MON COIN</div>
       {state.coachName ? (
         <div className="bg-carbon rounded-card p-5 flex gap-4 items-center">
           <div className="w-14 h-14 rounded-full bg-steel shrink-0" />
@@ -15,7 +15,7 @@ export function TeamTab({ api }: { api: BoxerAppApi }) {
         </div>
       ) : (
         <div className="bg-carbon rounded-card p-5 text-[15px] text-smoke">
-          No coach linked yet. Ask your club for their club code and add it from settings.
+          Aucun coach lié pour l&rsquo;instant. Demande le code de ton club et ajoute-le depuis les réglages.
         </div>
       )}
 
@@ -23,7 +23,7 @@ export function TeamTab({ api }: { api: BoxerAppApi }) {
         onClick={api.logout}
         className="mt-8 h-11 px-5 rounded-pill border border-steel text-bone text-sm font-semibold cursor-pointer"
       >
-        Log out
+        Se déconnecter
       </button>
     </div>
   );

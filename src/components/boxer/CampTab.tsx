@@ -8,6 +8,12 @@ function daysUntil(dateStr: string | null) {
   return Math.max(0, Math.ceil(diff / (1000 * 60 * 60 * 24)));
 }
 
+const TAB_LABELS: Record<CampTabType, string> = {
+  overview: "Aperçu",
+  schedule: "Calendrier",
+  sparring: "Sparring",
+};
+
 export function CampTab({ api }: { api: BoxerAppApi }) {
   const { state } = api;
   const displayFirstName = (state.firstName || "").toUpperCase();
@@ -18,15 +24,15 @@ export function CampTab({ api }: { api: BoxerAppApi }) {
 
   return (
     <div className="px-5 pb-8 pt-1">
-      <div className="text-[15px] font-semibold text-bone mb-4">Fight Camp</div>
+      <div className="text-[15px] font-semibold text-bone mb-4">Camp d&rsquo;entraînement</div>
 
       <div className="text-center mb-6">
         <div className="text-[15px] font-semibold text-bone">
           {displayFirstName} <span className="text-smoke font-medium">vs</span>{" "}
-          {(camp?.opponentName ?? "TBD").toUpperCase()}
+          {(camp?.opponentName ?? "À définir").toUpperCase()}
         </div>
         <div className="font-condensed text-[56px] leading-[52px] font-bold text-bone mt-2">
-          {daysOut !== null ? `${daysOut} DAYS` : "NO FIGHT SET"}
+          {daysOut !== null ? `${daysOut} JOURS` : "AUCUN COMBAT"}
         </div>
       </div>
 
@@ -44,23 +50,23 @@ export function CampTab({ api }: { api: BoxerAppApi }) {
               state.campTab === tab ? "text-bone border-bone" : "text-smoke border-transparent"
             }`}
           >
-            {tab}
+            {TAB_LABELS[tab]}
           </button>
         ))}
       </div>
 
       {state.campTab === "overview" && (
         <>
-          <div className="text-[13px] text-smoke mb-1">WEEK</div>
+          <div className="text-[13px] text-smoke mb-1">SEMAINE</div>
           <div className="font-condensed text-5xl leading-[44px] font-bold text-bone mb-6">
             {camp?.weekCurrent ?? 1} / {camp?.weekTotal ?? 8}
           </div>
           <div className="grid grid-cols-2 gap-3 mb-8">
             {[
-              { label: "Sessions", value: state.sessions.length },
-              { label: "Completed", value: completedCount },
+              { label: "Séances", value: state.sessions.length },
+              { label: "Terminées", value: completedCount },
               { label: "Sparring", value: 0 },
-              { label: "Recovery", value: 0 },
+              { label: "Récupération", value: 0 },
             ].map((stat) => (
               <div key={stat.label} className="bg-carbon rounded-card p-4">
                 <div className="text-[13px] text-smoke mb-2">{stat.label}</div>
@@ -69,7 +75,7 @@ export function CampTab({ api }: { api: BoxerAppApi }) {
             ))}
           </div>
           <div className="bg-bone rounded-card p-5">
-            <div className="text-xs font-semibold tracking-[0.05em] text-smoke mb-4">CAMP OBJECTIVES</div>
+            <div className="text-xs font-semibold tracking-[0.05em] text-smoke mb-4">OBJECTIFS DU CAMP</div>
             <div className="flex flex-col gap-3.5">
               {(camp?.objectives ?? []).map((obj, i) => (
                 <div key={obj} className="flex gap-3">
@@ -87,9 +93,9 @@ export function CampTab({ api }: { api: BoxerAppApi }) {
       {state.campTab === "schedule" && (
         <>
           <div className="text-xs font-semibold tracking-[0.05em] text-smoke mb-1">
-            SEASON 2025–2026 — FFBOXE
+            SAISON 2025–2026 — FFBOXE
           </div>
-          <div className="text-xs text-[#474747] mb-5">National amateur calendar, official dates</div>
+          <div className="text-xs text-[#474747] mb-5">Calendrier national amateur, dates officielles</div>
           <div className="flex flex-col gap-px bg-steel rounded-card overflow-hidden">
             {seasonCalendar.map((event) => (
               <div key={event.title} className="bg-carbon px-4 py-3.5">
@@ -102,25 +108,25 @@ export function CampTab({ api }: { api: BoxerAppApi }) {
             ))}
           </div>
           <div className="text-[11px] text-[#474747] mt-3">
-            Source: ffboxe.com — calendrier national. Regional/club-level dates vary by ligue.
+            Source : ffboxe.com — calendrier national. Les dates régionales/club varient selon la ligue.
           </div>
         </>
       )}
 
       {state.campTab === "sparring" && (
         <>
-          <div className="text-smoke text-sm py-6 pb-4">3 min work · 1 min rest · 6 rounds</div>
+          <div className="text-smoke text-sm py-6 pb-4">3 min de travail · 1 min de repos · 6 rounds</div>
           <button
             onClick={api.openSparringTimer}
             className="w-full h-[52px] rounded-pill bg-fight-red text-pure-white text-[15px] font-semibold cursor-pointer"
           >
-            START ROUND TIMER
+            LANCER LE MINUTEUR
           </button>
         </>
       )}
 
       <div onClick={api.openVideoReview} className="mt-2 text-[13px] font-semibold text-bone cursor-pointer">
-        Open latest video review →
+        Ouvrir la dernière analyse vidéo →
       </div>
     </div>
   );

@@ -5,6 +5,7 @@ import Link from "next/link";
 import { useRouter } from "next/navigation";
 import { createClient } from "@/lib/supabase/client";
 import { signUpCoach } from "@/lib/supabase/queries";
+import { translateAuthError } from "@/lib/authErrors";
 import { Logo } from "@/components/Logo";
 import { Button } from "@/components/ui/Button";
 import { TextField } from "@/components/ui/Input";
@@ -28,13 +29,13 @@ export function CoachSignup() {
     try {
       const result = await signUpCoach(supabase, { email, password, firstName, lastName, clubName });
       if (result.needsEmailConfirmation) {
-        setError("Check your email to confirm your account, then log in.");
+        setError("Vérifie ton email pour confirmer ton compte, puis connecte-toi.");
         setSubmitting(false);
         return;
       }
       setClubCode(result.clubCode);
     } catch (err) {
-      setError(err instanceof Error ? err.message : "Something went wrong.");
+      setError(err instanceof Error ? translateAuthError(err.message) : "Une erreur est survenue.");
     } finally {
       setSubmitting(false);
     }
@@ -44,15 +45,15 @@ export function CoachSignup() {
     return (
       <div className="min-h-screen flex items-center justify-center px-6">
         <div className="max-w-md w-full text-center">
-          <div className="text-2xl font-bold text-bone mb-3">You&rsquo;re all set.</div>
+          <div className="text-2xl font-bold text-bone mb-3">C&rsquo;est prêt.</div>
           <div className="text-smoke mb-6">
-            Share this code with your boxers so they can link their account to {clubName || "your club"}.
+            Partage ce code avec tes boxeurs et boxeuses pour qu&rsquo;ils lient leur compte à {clubName || "ton club"}.
           </div>
           <div className="font-condensed text-6xl font-bold text-bone tracking-[0.1em] mb-8 bg-carbon rounded-card py-8">
             {clubCode}
           </div>
           <Button variant="primary" onClick={() => router.push("/coach")}>
-            Go to dashboard
+            Aller au tableau de bord
           </Button>
         </div>
       </div>
@@ -65,14 +66,14 @@ export function CoachSignup() {
         <div className="mb-10">
           <Logo />
         </div>
-        <div className="text-2xl font-bold text-bone mb-8">Create your coach account</div>
+        <div className="text-2xl font-bold text-bone mb-8">Crée ton compte coach</div>
         <div className="flex flex-col gap-4 mb-6">
-          <TextField label="First name" value={firstName} onChange={(e) => setFirstName(e.target.value)} required />
-          <TextField label="Last name" value={lastName} onChange={(e) => setLastName(e.target.value)} required />
-          <TextField label="Club name" value={clubName} onChange={(e) => setClubName(e.target.value)} placeholder="Belleville Boxing Club" required />
+          <TextField label="Prénom" value={firstName} onChange={(e) => setFirstName(e.target.value)} required />
+          <TextField label="Nom" value={lastName} onChange={(e) => setLastName(e.target.value)} required />
+          <TextField label="Nom du club" value={clubName} onChange={(e) => setClubName(e.target.value)} placeholder="Boxing Club de Belleville" required />
           <TextField label="Email" type="email" value={email} onChange={(e) => setEmail(e.target.value)} required />
           <TextField
-            label="Password"
+            label="Mot de passe"
             type="password"
             value={password}
             onChange={(e) => setPassword(e.target.value)}
@@ -82,12 +83,12 @@ export function CoachSignup() {
         </div>
         {error && <div className="text-sm text-error mb-4">{error}</div>}
         <Button variant="primary" type="submit" disabled={submitting} className="w-full mb-4">
-          {submitting ? "Creating account…" : "Create account"}
+          {submitting ? "Création du compte…" : "Créer le compte"}
         </Button>
         <div className="text-sm text-smoke text-center">
-          Already have an account?{" "}
+          Déjà un compte ?{" "}
           <Link href="/coach/login" className="text-bone font-semibold">
-            Log in
+            Se connecter
           </Link>
         </div>
       </form>

@@ -1,7 +1,13 @@
 import type { BoxerAppApi } from "./useBoxerApp";
 import { ChevronRightIcon } from "@/components/icons/Icon";
 
-const ITEMS = ["Training", "Sparring", "Video", "Fight Result", "Weight"];
+const ITEMS = [
+  { key: "training", label: "Entraînement" },
+  { key: "sparring", label: "Sparring" },
+  { key: "video", label: "Vidéo" },
+  { key: "result", label: "Résultat de combat" },
+  { key: "weight", label: "Poids" },
+];
 
 export function AddSheet({ api }: { api: BoxerAppApi }) {
   return (
@@ -16,17 +22,17 @@ export function AddSheet({ api }: { api: BoxerAppApi }) {
       >
         <div className="w-9 h-1 bg-steel rounded-full mx-auto mb-5" />
         <div className="text-[13px] font-semibold tracking-[0.05em] text-smoke mb-3">
-          ADD TO YOUR PATH
+          AJOUTER À TON PARCOURS
         </div>
         {ITEMS.map((item, i) => (
           <div
-            key={item}
-            onClick={item === "Sparring" ? api.openSparringFromSheet : api.closeAddSheet}
+            key={item.key}
+            onClick={item.key === "sparring" ? api.openSparringFromSheet : api.closeAddSheet}
             className={`h-14 flex items-center justify-between text-bone text-base cursor-pointer ${
               i < ITEMS.length - 1 ? "border-b border-steel" : ""
             }`}
           >
-            {item}
+            {item.label}
             <ChevronRightIcon size={18} className="text-smoke" />
           </div>
         ))}

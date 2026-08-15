@@ -4,6 +4,7 @@ import { useState } from "react";
 import Link from "next/link";
 import { useRouter } from "next/navigation";
 import { createClient } from "@/lib/supabase/client";
+import { translateAuthError } from "@/lib/authErrors";
 import { Logo } from "@/components/Logo";
 import { Button } from "@/components/ui/Button";
 import { TextField } from "@/components/ui/Input";
@@ -22,7 +23,7 @@ export function CoachLogin() {
     setError(null);
     const { error } = await supabase.auth.signInWithPassword({ email, password });
     if (error) {
-      setError(error.message);
+      setError(translateAuthError(error.message));
       setSubmitting(false);
       return;
     }
@@ -35,11 +36,11 @@ export function CoachLogin() {
         <div className="mb-10">
           <Logo />
         </div>
-        <div className="text-2xl font-bold text-bone mb-8">Coach log in</div>
+        <div className="text-2xl font-bold text-bone mb-8">Connexion coach</div>
         <div className="flex flex-col gap-4 mb-6">
           <TextField label="Email" type="email" value={email} onChange={(e) => setEmail(e.target.value)} required />
           <TextField
-            label="Password"
+            label="Mot de passe"
             type="password"
             value={password}
             onChange={(e) => setPassword(e.target.value)}
@@ -48,12 +49,12 @@ export function CoachLogin() {
         </div>
         {error && <div className="text-sm text-error mb-4">{error}</div>}
         <Button variant="primary" type="submit" disabled={submitting} className="w-full mb-4">
-          {submitting ? "Logging in…" : "Log in"}
+          {submitting ? "Connexion…" : "Se connecter"}
         </Button>
         <div className="text-sm text-smoke text-center">
-          New here?{" "}
+          Nouveau ici ?{" "}
           <Link href="/coach/signup" className="text-bone font-semibold">
-            Create an account
+            Créer un compte
           </Link>
         </div>
       </form>

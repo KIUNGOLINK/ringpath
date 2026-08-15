@@ -3,6 +3,7 @@
 import { useCallback, useEffect, useRef, useState } from "react";
 import { createClient } from "@/lib/supabase/client";
 import { completeSession, getBoxerBundle, signUpBoxer } from "@/lib/supabase/queries";
+import { translateAuthError } from "@/lib/authErrors";
 import { BoxerState, INITIAL_STATE, INITIAL_TIMER, Stance, Tab, CampTab, Session } from "./types";
 
 function formatTime(iso: string) {
@@ -129,7 +130,7 @@ export function useBoxerApp() {
         setState((s) => ({
           ...s,
           authSubmitting: false,
-          authError: "Check your email to confirm your account, then log in.",
+          authError: "Vérifie ton email pour confirmer ton compte, puis connecte-toi.",
           screen: "login",
         }));
         return;
@@ -141,7 +142,7 @@ export function useBoxerApp() {
       setState((s) => ({
         ...s,
         authSubmitting: false,
-        authError: err instanceof Error ? err.message : "Something went wrong. Try again.",
+        authError: err instanceof Error ? translateAuthError(err.message) : "Une erreur est survenue. Réessaie.",
       }));
     }
   }, [supabase, state.email, state.password, state.firstName, state.lastName, state.weight, state.stance, state.clubCode, loadBundle]);
@@ -153,7 +154,7 @@ export function useBoxerApp() {
       password: state.password,
     });
     if (error) {
-      setState((s) => ({ ...s, authSubmitting: false, authError: error.message }));
+      setState((s) => ({ ...s, authSubmitting: false, authError: translateAuthError(error.message) }));
       return;
     }
     if (data.session?.user) await loadBundle(data.session.user.id);
@@ -204,12 +205,12 @@ export function useBoxerApp() {
       energy: 0,
       difficulty: 0,
     }));
-    toast("Session added to your journey.");
+    toast("Séance ajoutée à ton parcours.");
     if (sessionId) {
       try {
         await completeSession(supabase, sessionId, energy, difficulty);
       } catch {
-        toast("Saved locally — couldn't sync to the server.");
+        toast("Enregistré localement — synchronisation impossible pour l'instant.");
       }
     }
   }, [supabase, state.activeSessionId, state.energy, state.difficulty, toast]);

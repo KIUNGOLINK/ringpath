@@ -10,6 +10,13 @@ const MARKER_COLOR: Record<string, string> = {
   tactical: "#7DD3FC",
 };
 
+const MARKER_LABEL: Record<string, string> = {
+  good: "BIEN",
+  improve: "À AMÉLIORER",
+  mistake: "ERREUR",
+  tactical: "TACTIQUE",
+};
+
 export function VideoReview({ api }: { api: BoxerAppApi }) {
   const { state } = api;
   const active = videoMarkers[state.activeMarker];
@@ -17,7 +24,7 @@ export function VideoReview({ api }: { api: BoxerAppApi }) {
   return (
     <div className="absolute inset-0 bg-black overflow-y-auto">
       <div className="relative w-full aspect-video bg-carbon">
-        <ImageSlot caption="sparring footage, coach annotation view" className="absolute inset-0 w-full h-full" />
+        <ImageSlot caption="séquence de sparring, vue annotation coach" className="absolute inset-0 w-full h-full" />
         <button
           onClick={api.closeVideoReview}
           className="absolute top-14 left-3 w-9 h-9 bg-transparent border-none text-bone cursor-pointer flex items-center justify-center"
@@ -50,21 +57,21 @@ export function VideoReview({ api }: { api: BoxerAppApi }) {
             className="text-[11px] font-semibold tracking-[0.04em] px-2.5 py-[3px] rounded-pill text-obsidian uppercase"
             style={{ background: MARKER_COLOR[active.type] }}
           >
-            {active.type}
+            {MARKER_LABEL[active.type] ?? active.type}
           </span>
         </div>
 
         <div className="flex gap-2.5 mb-5">
           <div className="w-6 h-6 rounded-full bg-steel shrink-0" />
           <div>
-            <div className="text-[13px] font-semibold text-bone">Coach Sofia</div>
+            <div className="text-[13px] font-semibold text-bone">{state.coachName ?? "Coach"}</div>
             <div className="text-sm text-mist">{active.note}</div>
           </div>
         </div>
 
         <div className="flex gap-5">
-          <span className="text-[13px] font-semibold text-bone cursor-pointer">Reply</span>
-          <span className="text-[13px] font-semibold text-bone cursor-pointer">Mark reviewed</span>
+          <span className="text-[13px] font-semibold text-bone cursor-pointer">Répondre</span>
+          <span className="text-[13px] font-semibold text-bone cursor-pointer">Marquer comme vu</span>
         </div>
       </div>
     </div>
