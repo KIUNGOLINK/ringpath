@@ -10,7 +10,7 @@ const STEPS = [
   {
     n: "01",
     title: "Cherche",
-    body: "Filtre par ville, poids, garde, intensité, trouve une session près de chez toi.",
+    body: "Filtre par ville, trouve une session près de chez toi.",
   },
   {
     n: "02",
