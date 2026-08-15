@@ -191,11 +191,12 @@ function OnboardStep3({ api }: { api: BoxerAppApi }) {
 
 export function Login({ api }: { api: BoxerAppApi }) {
   const { state } = api;
+  const router = useRouter();
   const isSpar = state.sparIntent;
   return (
     <div className="absolute inset-0 bg-obsidian px-5 pt-14 pb-6 flex flex-col">
       <button
-        onClick={api.goToOnboarding}
+        onClick={() => (isSpar ? router.push("/app/spar") : api.goToOnboarding())}
         className="w-11 h-11 -ml-2.5 flex items-center justify-center cursor-pointer bg-transparent border-none text-bone mb-3"
       >
         <ChevronLeftIcon />
