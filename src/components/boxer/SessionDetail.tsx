@@ -21,10 +21,14 @@ export function SessionDetail({ api }: { api: BoxerAppApi }) {
       <div className="text-[11px] font-semibold tracking-[0.05em] text-smoke mb-2">
         AUJOURD&rsquo;HUI {session?.time}
       </div>
-      <div className="text-sm text-mist mb-6">Durée : 75 min</div>
+      <div className="text-sm text-mist mb-6">
+        {session?.durationMinutes ? `Durée : ${session.durationMinutes} min` : "Durée non définie"}
+      </div>
 
       <div className="text-xs font-semibold tracking-[0.05em] text-smoke mb-2">OBJECTIF</div>
-      <div className="text-base text-bone mb-8">Améliorer les sorties latérales après le 1-2.</div>
+      <div className="text-base text-bone mb-8">
+        {session?.objective || "Aucun objectif défini pour cette séance."}
+      </div>
 
       <div className="text-xs font-semibold tracking-[0.05em] text-smoke mb-3">SÉANCE</div>
       <div className="flex flex-col gap-px bg-steel rounded-card overflow-hidden mb-8">

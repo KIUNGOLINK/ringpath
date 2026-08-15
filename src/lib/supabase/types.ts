@@ -112,6 +112,8 @@ export interface Database {
           completed: boolean;
           energy: number | null;
           difficulty: number | null;
+          duration_minutes: number | null;
+          objective: string | null;
           created_at: string;
         };
         Insert: {
@@ -123,6 +125,8 @@ export interface Database {
           completed?: boolean;
           energy?: number | null;
           difficulty?: number | null;
+          duration_minutes?: number | null;
+          objective?: string | null;
         };
         Update: Partial<{
           title: string;
@@ -131,6 +135,8 @@ export interface Database {
           completed: boolean;
           energy: number | null;
           difficulty: number | null;
+          duration_minutes: number | null;
+          objective: string | null;
         }>;
         Relationships: [];
       };

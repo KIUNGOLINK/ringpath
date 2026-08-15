@@ -47,6 +47,9 @@ export function useBoxerApp() {
             title: sess.title,
             sub: sess.subtitle,
             completed: sess.completed,
+            sessionType: sess.session_type,
+            durationMinutes: sess.duration_minutes,
+            objective: sess.objective,
           })
         ),
       }));

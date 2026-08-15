@@ -17,6 +17,9 @@ export interface Session {
   title: string;
   sub: string;
   completed: boolean;
+  sessionType: string;
+  durationMinutes: number | null;
+  objective: string | null;
 }
 
 export interface Camp {

@@ -21,6 +21,8 @@ export function CampTab({ api }: { api: BoxerAppApi }) {
   const daysOut = daysUntil(camp?.fightDate ?? null);
   const progressPct = camp ? Math.min(100, Math.round((camp.weekCurrent / camp.weekTotal) * 100)) : 0;
   const completedCount = state.sessions.filter((s) => s.completed).length;
+  const sparringCount = state.sessions.filter((s) => s.completed && s.sessionType === "Sparring").length;
+  const recoveryCount = state.sessions.filter((s) => s.completed && s.sessionType === "Recovery").length;
 
   return (
     <div className="px-5 pb-8 pt-1">
@@ -65,8 +67,8 @@ export function CampTab({ api }: { api: BoxerAppApi }) {
             {[
               { label: "Séances", value: state.sessions.length },
               { label: "Terminées", value: completedCount },
-              { label: "Sparring", value: 0 },
-              { label: "Récupération", value: 0 },
+              { label: "Sparring", value: sparringCount },
+              { label: "Récupération", value: recoveryCount },
             ].map((stat) => (
               <div key={stat.label} className="bg-carbon rounded-card p-4">
                 <div className="text-[13px] text-smoke mb-2">{stat.label}</div>

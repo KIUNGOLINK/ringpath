@@ -78,6 +78,8 @@ export async function signUpBoxer(
       subtitle: "Prise en main · 30 min",
       session_type: "Technical",
       completed: false,
+      duration_minutes: 30,
+      objective: "Apprendre les bases : garde, déplacements, jab direct.",
     },
   ]);
 
@@ -185,6 +187,27 @@ export async function getCoachInfo(supabase: Client, coachId: string) {
     supabase.from("coaches").select().eq("profile_id", coachId).single(),
   ]);
   return { profile, coach };
+}
+
+export async function updateBoxerWeight(supabase: Client, userId: string, weightKg: number) {
+  const { error } = await supabase.from("boxers").update({ weight_kg: weightKg }).eq("profile_id", userId);
+  if (error) throw error;
+}
+
+export async function recordFightResult(supabase: Client, userId: string, result: "win" | "loss") {
+  const { data: boxer, error: readError } = await supabase
+    .from("boxers")
+    .select("wins, losses")
+    .eq("profile_id", userId)
+    .single();
+  if (readError) throw readError;
+  const { error } = await supabase
+    .from("boxers")
+    .update(
+      result === "win" ? { wins: boxer.wins + 1 } : { losses: boxer.losses + 1 }
+    )
+    .eq("profile_id", userId);
+  if (error) throw error;
 }
 
 export async function completeSession(
