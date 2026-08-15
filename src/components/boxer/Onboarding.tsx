@@ -24,19 +24,9 @@ function OnboardStep0({ api }: { api: BoxerAppApi }) {
         <div className="text-[11px] text-obsidian/55 mb-1.5 px-0.5">Trouve un partenaire de sparring près de toi.</div>
         <button
           onClick={() => router.push("/app/spar")}
-          className="w-full h-[52px] rounded-pill bg-fight-red text-pure-white text-[15px] font-semibold cursor-pointer mb-3.5"
+          className="w-full h-[52px] rounded-pill bg-fight-red text-pure-white text-[15px] font-semibold cursor-pointer mb-3"
         >
           Spar
-        </button>
-        <div className="text-[11px] text-obsidian/55 mb-1.5 px-0.5">Suis ta progression, ton club, tes compétitions.</div>
-        <button
-          onClick={() => {
-            api.setSparIntent(false);
-            api.goToStep(1);
-          }}
-          className="w-full h-[52px] rounded-pill bg-obsidian text-bone text-[15px] font-semibold cursor-pointer mb-3"
-        >
-          RingPath Compét
         </button>
         <button
           onClick={api.goToLogin}
