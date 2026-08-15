@@ -1,6 +1,3 @@
-import { seasonCalendar, seasonCalendarSeason } from "@/data/mock";
-import { analyzeWeek } from "@/lib/weeklyAnalysis";
-import { WeeklyAnalysisCard } from "@/components/ui/WeeklyAnalysisCard";
 import type { CampTab as CampTabType } from "./types";
 import type { BoxerAppApi } from "./useBoxerApp";
 
@@ -12,7 +9,6 @@ function daysUntil(dateStr: string | null) {
 
 const TAB_LABELS: Record<CampTabType, string> = {
   overview: "Aperçu",
-  schedule: "Calendrier",
   sparring: "Sparring",
 };
 
@@ -25,7 +21,6 @@ export function CampTab({ api }: { api: BoxerAppApi }) {
   const completedCount = state.sessions.filter((s) => s.completed).length;
   const sparringCount = state.sessions.filter((s) => s.completed && s.sessionType === "Sparring").length;
   const recoveryCount = state.sessions.filter((s) => s.completed && s.sessionType === "Recovery").length;
-  const analysis = analyzeWeek(state.sessions, daysOut);
 
   return (
     <div className="px-5 pb-8 pt-1">
@@ -47,7 +42,7 @@ export function CampTab({ api }: { api: BoxerAppApi }) {
       </div>
 
       <div className="flex gap-5 border-b border-steel mb-6">
-        {(["overview", "schedule", "sparring"] as CampTabType[]).map((tab) => (
+        {(["overview", "sparring"] as CampTabType[]).map((tab) => (
           <button
             key={tab}
             onClick={() => api.setCampTab(tab)}
@@ -79,9 +74,6 @@ export function CampTab({ api }: { api: BoxerAppApi }) {
               </div>
             ))}
           </div>
-          <div className="mb-8">
-            <WeeklyAnalysisCard analysis={analysis} />
-          </div>
           <div className="bg-bone rounded-card p-5">
             <div className="text-xs font-semibold tracking-[0.05em] text-smoke mb-4">OBJECTIFS DU CAMP</div>
             <div className="flex flex-col gap-3.5">
@@ -94,38 +86,6 @@ export function CampTab({ api }: { api: BoxerAppApi }) {
                 </div>
               ))}
             </div>
-          </div>
-        </>
-      )}
-
-      {state.campTab === "schedule" && (
-        <>
-          <div className="text-xs font-semibold tracking-[0.05em] text-smoke mb-1">
-            SAISON {seasonCalendarSeason} — FFBOXE
-          </div>
-          <div className="text-xs text-[#474747] mb-5">Calendrier national amateur, dates officielles</div>
-          {seasonCalendar.length === 0 ? (
-            <div className="bg-carbon rounded-card p-5">
-              <div className="text-sm text-bone mb-1.5">Calendrier pas encore publié par la FFBoxe.</div>
-              <div className="text-[13px] text-smoke">
-                Consulte ffboxe.com pour la date de publication de la saison {seasonCalendarSeason}.
-              </div>
-            </div>
-          ) : (
-            <div className="flex flex-col gap-px bg-steel rounded-card overflow-hidden">
-              {seasonCalendar.map((event) => (
-                <div key={event.title} className="bg-carbon px-4 py-3.5">
-                  <div className="text-sm text-bone mb-0.5">{event.title}</div>
-                  <div className="text-xs text-smoke">
-                    {event.date}
-                    {event.location && ` · ${event.location}`}
-                  </div>
-                </div>
-              ))}
-            </div>
-          )}
-          <div className="text-[11px] text-[#474747] mt-3">
-            Source : ffboxe.com — calendrier national. Les dates régionales/club varient selon la ligue.
           </div>
         </>
       )}

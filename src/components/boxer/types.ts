@@ -8,7 +8,7 @@ export type Screen =
   | "videoReview";
 
 export type Tab = "home" | "camp" | "team" | "passport";
-export type CampTab = "overview" | "schedule" | "sparring";
+export type CampTab = "overview" | "sparring";
 export type Stance = "ORTHODOX" | "SOUTHPAW";
 
 export interface Session {
