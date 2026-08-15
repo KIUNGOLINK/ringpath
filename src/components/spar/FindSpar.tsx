@@ -4,10 +4,10 @@ import { useEffect, useState } from "react";
 import { useRouter } from "next/navigation";
 import { createClient } from "@/lib/supabase/client";
 import { listSparSessions } from "@/lib/supabase/spar";
-import { ChevronLeftIcon, SearchIcon, LocationIcon, ChevronRightIcon } from "@/components/icons/Icon";
+import { ChevronLeftIcon, SearchIcon, LocationIcon } from "@/components/icons/Icon";
 import { SparSessionCard } from "./SparSessionCard";
 import { nearestCity } from "@/lib/sparCities";
-import type { SparMode, SparIntensity, Stance } from "@/lib/supabase/types";
+import type { SparMode } from "@/lib/supabase/types";
 
 const MODE_FILTERS: { key: SparMode | "ALL"; label: string }[] = [
   { key: "ALL", label: "Tous" },
@@ -15,33 +15,15 @@ const MODE_FILTERS: { key: SparMode | "ALL"; label: string }[] = [
   { key: "CAMP_SPAR", label: "Camp Spar" },
 ];
 
-const INTENSITY_FILTERS: { key: SparIntensity | "ALL"; label: string }[] = [
-  { key: "ALL", label: "Toutes intensités" },
-  { key: "TECHNICAL", label: "Technique" },
-  { key: "MODERATE", label: "Modéré" },
-  { key: "COMPETITION_PREP", label: "Prépa compét" },
-];
-
-const STANCE_FILTERS: { key: Stance | "ALL"; label: string }[] = [
-  { key: "ALL", label: "Garde indifférente" },
-  { key: "ORTHODOX", label: "Orthodoxe" },
-  { key: "SOUTHPAW", label: "Gaucher" },
-];
-
 export function FindSpar() {
   const router = useRouter();
   const supabase = createClient();
   const [city, setCity] = useState("");
   const [mode, setMode] = useState<SparMode | "ALL">("ALL");
-  const [intensity, setIntensity] = useState<SparIntensity | "ALL">("ALL");
-  const [stance, setStance] = useState<Stance | "ALL">("ALL");
-  const [weight, setWeight] = useState("");
-  const [showMoreFilters, setShowMoreFilters] = useState(false);
   const [loading, setLoading] = useState(true);
   const [results, setResults] = useState<Awaited<ReturnType<typeof listSparSessions>>>([]);
   const [locating, setLocating] = useState(false);
   const [locationError, setLocationError] = useState<string | null>(null);
-  const activeMoreFiltersCount = [intensity !== "ALL", stance !== "ALL", weight !== ""].filter(Boolean).length;
 
   function useMyLocation() {
     if (!navigator.geolocation) {
@@ -67,13 +49,7 @@ export function FindSpar() {
     let cancelled = false;
     Promise.resolve().then(async () => {
       setLoading(true);
-      const data = await listSparSessions(supabase, {
-        city: city || undefined,
-        mode,
-        intensity,
-        stance,
-        weightKg: weight ? Number(weight) : undefined,
-      });
+      const data = await listSparSessions(supabase, { city: city || undefined, mode });
       if (!cancelled) {
         setResults(data);
         setLoading(false);
@@ -83,7 +59,7 @@ export function FindSpar() {
       cancelled = true;
     };
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [city, mode, intensity, stance, weight]);
+  }, [city, mode]);
 
   return (
     <div className="min-h-screen bg-obsidian max-w-md mx-auto">
@@ -113,7 +89,7 @@ export function FindSpar() {
       </div>
       <div className="px-5 mb-3 min-h-[18px] text-[13px] text-smoke">{locationError}</div>
 
-      <div className="px-5 flex gap-2 mb-3 overflow-x-auto">
+      <div className="px-5 flex gap-2 mb-6 overflow-x-auto">
         {MODE_FILTERS.map((f) => (
           <button
             key={f.key}
@@ -126,61 +102,6 @@ export function FindSpar() {
           </button>
         ))}
       </div>
-
-      <button
-        onClick={() => setShowMoreFilters((v) => !v)}
-        className="mx-5 mb-3 flex items-center gap-1 bg-transparent border-none cursor-pointer text-smoke text-xs font-semibold"
-      >
-        Poids, garde, intensité{activeMoreFiltersCount > 0 ? ` (${activeMoreFiltersCount})` : ""}
-        <ChevronRightIcon size={13} className={`transition-transform ${showMoreFilters ? "rotate-90" : ""}`} />
-      </button>
-
-      {showMoreFilters && (
-        <div className="px-5 mb-4 flex flex-col gap-3">
-          <div>
-            <div className="text-[13px] font-medium text-mist mb-1.5">Ton poids (kg)</div>
-            <input
-              value={weight}
-              onChange={(e) => setWeight(e.target.value)}
-              placeholder="Ex. 71"
-              type="number"
-              className="w-full h-11 rounded-md bg-carbon border border-steel px-4 text-[15px] text-bone placeholder:text-smoke outline-none focus:border-verified"
-            />
-          </div>
-          <div>
-            <div className="text-[13px] font-medium text-mist mb-1.5">Garde</div>
-            <div className="flex gap-2 overflow-x-auto">
-              {STANCE_FILTERS.map((f) => (
-                <button
-                  key={f.key}
-                  onClick={() => setStance(f.key)}
-                  className={`shrink-0 px-3.5 py-2 rounded-pill text-xs font-semibold cursor-pointer border ${
-                    stance === f.key ? "bg-bone text-obsidian border-bone" : "bg-graphite text-bone border-steel"
-                  }`}
-                >
-                  {f.label}
-                </button>
-              ))}
-            </div>
-          </div>
-          <div>
-            <div className="text-[13px] font-medium text-mist mb-1.5">Intensité</div>
-            <div className="flex gap-2 overflow-x-auto">
-              {INTENSITY_FILTERS.map((f) => (
-                <button
-                  key={f.key}
-                  onClick={() => setIntensity(f.key)}
-                  className={`shrink-0 px-3.5 py-2 rounded-pill text-xs font-semibold cursor-pointer border ${
-                    intensity === f.key ? "bg-bone text-obsidian border-bone" : "bg-graphite text-bone border-steel"
-                  }`}
-                >
-                  {f.label}
-                </button>
-              ))}
-            </div>
-          </div>
-        </div>
-      )}
 
       <div className="px-5 pb-10 flex flex-col gap-2.5">
         {loading ? (
