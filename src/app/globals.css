@@ -1,0 +1,89 @@
+@import "tailwindcss";
+
+@theme {
+  /* Fonts */
+  --font-sans: var(--font-instrument-sans), sans-serif;
+  --font-condensed: var(--font-barlow-condensed), sans-serif;
+
+  /* Neutrals (dark UI) */
+  --color-obsidian: #070707;
+  --color-carbon: #101010;
+  --color-graphite: #181818;
+  --color-steel: #292929;
+  --color-smoke: #767676;
+  --color-mist: #b7b7b7;
+  --color-bone: #f5f3ee;
+  --color-pure-white: #ffffff;
+
+  /* Fight Red */
+  --color-fight-red: #e31b23;
+
+  /* Semantic */
+  --color-success: #30d158;
+  --color-verified: #4c8dff;
+  --color-warning: #ffb020;
+  --color-error: #e5484d;
+  --color-information: #7dd3fc;
+
+  /* Light-mode surfaces */
+  --color-light-border: #e3e1dd;
+  --color-passport-bg: #f5f3ee;
+  --color-passport-border: #d9d6ce;
+  --color-passport-chip: #e9e6df;
+  --color-verified-text: #1e824c;
+  --color-confirmed-text: #2e6bd6;
+
+  /* Radius */
+  --radius-sm: 8px;
+  --radius-md: 12px;
+  --radius-card: 16px;
+  --radius-lg: 24px;
+  --radius-pill: 999px;
+
+  /* Shadows */
+  --shadow-light-sm: 0 8px 30px rgba(0, 0, 0, 0.08);
+  --shadow-light-lg: 0 24px 80px rgba(0, 0, 0, 0.22);
+
+  /* Motion */
+  --ease-standard: cubic-bezier(0.2, 0.8, 0.2, 1);
+  --ease-entrance: cubic-bezier(0.16, 1, 0.3, 1);
+  --ease-exit: cubic-bezier(0.7, 0, 0.84, 0);
+}
+
+:root {
+  color-scheme: dark;
+}
+
+* {
+  box-sizing: border-box;
+}
+
+body {
+  background: var(--color-obsidian);
+  color: var(--color-bone);
+}
+
+a {
+  color: var(--color-verified);
+  text-decoration: none;
+}
+
+a:hover {
+  color: var(--color-information);
+}
+
+::selection {
+  background: var(--color-fight-red);
+  color: var(--color-bone);
+}
+
+@media (prefers-reduced-motion: reduce) {
+  *,
+  *::before,
+  *::after {
+    animation-duration: 0.01ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.01ms !important;
+    scroll-behavior: auto !important;
+  }
+}
