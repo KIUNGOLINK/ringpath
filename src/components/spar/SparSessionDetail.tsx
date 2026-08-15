@@ -51,6 +51,7 @@ export function SparSessionDetail({ id }: { id: string }) {
   const isHost = s.host_id === userId;
   const isParticipant = participants.some((p) => p.user_id === userId);
   const spotsLeft = s.max_participants - participants.length;
+  const isPast = s.session_date < new Date().toISOString().slice(0, 10);
 
   async function handleRequest() {
     if (!userId) return;
@@ -193,6 +194,24 @@ export function SparSessionDetail({ id }: { id: string }) {
         <div className="text-[11px] text-[#474747] text-center mt-3">
           {spotsLeft} place{spotsLeft > 1 ? "s" : ""} restante{spotsLeft > 1 ? "s" : ""}
         </div>
+      )}
+
+      {isPast && isParticipant && (
+        <button
+          onClick={() => router.push(`/app/spar/session/${id}/feedback`)}
+          className="w-full h-12 rounded-pill border border-bone text-bone text-sm font-semibold cursor-pointer mt-5"
+        >
+          Comment ça s&rsquo;est passé ?
+        </button>
+      )}
+
+      {(isHost || isParticipant) && (
+        <button
+          onClick={() => router.push(`/app/spar/session/${id}/report`)}
+          className="block mx-auto mt-4 text-smoke text-xs underline bg-transparent border-none cursor-pointer"
+        >
+          Signaler un problème
+        </button>
       )}
     </div>
   );

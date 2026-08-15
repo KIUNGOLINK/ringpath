@@ -119,7 +119,7 @@ export function SparHome() {
             )}
           </Section>
 
-          <Section title="À VENIR" last>
+          <Section title="À VENIR">
             {upcoming.length === 0 ? (
               <div className="text-smoke text-sm">Rien de programmé.</div>
             ) : (
@@ -134,6 +134,13 @@ export function SparHome() {
               ))
             )}
           </Section>
+
+          <button
+            onClick={() => router.push("/app/spar/history")}
+            className="block mx-auto text-smoke text-[13px] underline bg-transparent border-none cursor-pointer"
+          >
+            Voir l&rsquo;historique
+          </button>
         </>
       )}
     </div>

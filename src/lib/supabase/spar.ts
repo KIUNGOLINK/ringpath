@@ -238,6 +238,35 @@ export async function cancelSparSession(supabase: Client, id: string) {
   if (error) throw error;
 }
 
+// A session is "past" once its date has gone by — that's when feedback opens
+// up, without needing a separate host action to mark it COMPLETED.
+export async function listSparHistory(supabase: Client, userId: string) {
+  const { data: participating } = await supabase
+    .from("spar_participants")
+    .select("spar_session_id")
+    .eq("user_id", userId);
+  const ids = (participating ?? []).map((p) => p.spar_session_id);
+  if (ids.length === 0) return [];
+  const today = new Date().toISOString().slice(0, 10);
+  const { data, error } = await supabase
+    .from("spar_sessions")
+    .select()
+    .in("id", ids)
+    .lt("session_date", today)
+    .order("session_date", { ascending: false });
+  if (error) throw error;
+  return data ?? [];
+}
+
+export async function getFeedbackGivenForSession(supabase: Client, sparSessionId: string, authorId: string) {
+  const { data } = await supabase
+    .from("spar_feedback")
+    .select("target_id")
+    .eq("spar_session_id", sparSessionId)
+    .eq("author_id", authorId);
+  return (data ?? []).map((f) => f.target_id);
+}
+
 export type SparFeedbackInput = {
   sparSessionId: string;
   authorId: string;
