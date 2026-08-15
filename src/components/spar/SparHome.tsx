@@ -17,6 +17,7 @@ export function SparHome() {
   const supabase = createClient();
   const [switching, setSwitching] = useState(false);
   const [loading, setLoading] = useState(true);
+  const [userId, setUserId] = useState<string | null>(null);
   const [nearby, setNearby] = useState<Awaited<ReturnType<typeof listSparSessions>>>([]);
   const [requests, setRequests] = useState<Awaited<ReturnType<typeof listMyJoinRequests>>>([]);
   const [upcoming, setUpcoming] = useState<Awaited<ReturnType<typeof listMySparSessions>>>([]);
@@ -24,12 +25,13 @@ export function SparHome() {
   useEffect(() => {
     let cancelled = false;
     supabase.auth.getSession().then(async ({ data }) => {
-      const userId = data.session?.user.id;
-      if (!userId) return;
+      const uid = data.session?.user.id ?? null;
+      if (cancelled) return;
+      setUserId(uid);
       const [sessions, myRequests, mine] = await Promise.all([
         listSparSessions(supabase, {}),
-        listMyJoinRequests(supabase, userId),
-        listMySparSessions(supabase, userId),
+        uid ? listMyJoinRequests(supabase, uid) : Promise.resolve([]),
+        uid ? listMySparSessions(supabase, uid) : Promise.resolve([]),
       ]);
       if (cancelled) return;
       setNearby(sessions.slice(0, 5));
@@ -44,24 +46,43 @@ export function SparHome() {
   }, []);
 
   async function switchToCompet() {
-    const { data } = await supabase.auth.getSession();
-    if (!data.session?.user) return;
+    if (!userId) return;
     setSwitching(true);
-    await setAppMode(supabase, data.session.user.id, "compet");
+    await setAppMode(supabase, userId, "compet");
     router.push("/app");
+  }
+
+  function requireAuth(onAuthenticated: () => void) {
+    if (userId) {
+      onAuthenticated();
+      return;
+    }
+    const wantsLogin = window.confirm(
+      "Il te faut un compte pour continuer. OK pour te connecter, Annuler pour créer un compte Spar."
+    );
+    router.push(wantsLogin ? "/app?intent=spar&login=1" : "/app?intent=spar");
   }
 
   return (
     <div className="min-h-screen bg-obsidian px-5 pt-16 pb-12 max-w-md mx-auto">
       <div className="flex items-center justify-between mb-8">
         <div className="text-[26px] font-bold text-bone tracking-[-0.01em]">SPAR</div>
-        <button
-          onClick={switchToCompet}
-          disabled={switching}
-          className="h-9 px-3.5 rounded-pill border border-steel text-bone text-xs font-semibold cursor-pointer disabled:opacity-50"
-        >
-          {switching ? "…" : "RingPath Compét →"}
-        </button>
+        {userId ? (
+          <button
+            onClick={switchToCompet}
+            disabled={switching}
+            className="h-9 px-3.5 rounded-pill border border-steel text-bone text-xs font-semibold cursor-pointer disabled:opacity-50"
+          >
+            {switching ? "…" : "RingPath Compét →"}
+          </button>
+        ) : (
+          <button
+            onClick={() => router.push("/app?intent=spar&login=1")}
+            className="h-9 px-3.5 rounded-pill border border-steel text-bone text-xs font-semibold cursor-pointer"
+          >
+            Se connecter
+          </button>
+        )}
       </div>
 
       <div className="flex gap-3 mb-8">
@@ -72,7 +93,7 @@ export function SparHome() {
           <span>Trouver un sparring</span>
         </button>
         <button
-          onClick={() => router.push("/app/spar/create")}
+          onClick={() => requireAuth(() => router.push("/app/spar/create"))}
           className="flex-1 h-[88px] rounded-card bg-carbon border border-steel text-bone text-[13px] font-semibold cursor-pointer flex flex-col items-center justify-center gap-1.5"
         >
           <span>Créer un sparring</span>
@@ -111,36 +132,47 @@ export function SparHome() {
             )}
           </Section>
 
-          <Section title="TES DEMANDES">
-            {requests.length === 0 ? (
-              <div className="text-smoke text-sm">Aucune demande en attente.</div>
-            ) : (
-              <div className="text-bone text-sm">{requests.length} en attente</div>
-            )}
-          </Section>
+          {userId ? (
+            <>
+              <Section title="TES DEMANDES">
+                {requests.length === 0 ? (
+                  <div className="text-smoke text-sm">Aucune demande en attente.</div>
+                ) : (
+                  <div className="text-bone text-sm">{requests.length} en attente</div>
+                )}
+              </Section>
 
-          <Section title="À VENIR">
-            {upcoming.length === 0 ? (
-              <div className="text-smoke text-sm">Rien de programmé.</div>
-            ) : (
-              upcoming.map((s) => (
-                <button
-                  key={s.id}
-                  onClick={() => router.push(`/app/spar/session/${s.id}`)}
-                  className="block w-full text-left bg-transparent border-none cursor-pointer text-bone text-sm mb-1"
-                >
-                  {formatDate(s.session_date)} · {s.start_time.slice(0, 5)} — {s.city}
-                </button>
-              ))
-            )}
-          </Section>
+              <Section title="À VENIR">
+                {upcoming.length === 0 ? (
+                  <div className="text-smoke text-sm">Rien de programmé.</div>
+                ) : (
+                  upcoming.map((s) => (
+                    <button
+                      key={s.id}
+                      onClick={() => router.push(`/app/spar/session/${s.id}`)}
+                      className="block w-full text-left bg-transparent border-none cursor-pointer text-bone text-sm mb-1"
+                    >
+                      {formatDate(s.session_date)} · {s.start_time.slice(0, 5)} — {s.city}
+                    </button>
+                  ))
+                )}
+              </Section>
 
-          <button
-            onClick={() => router.push("/app/spar/history")}
-            className="block mx-auto text-smoke text-[13px] underline bg-transparent border-none cursor-pointer"
-          >
-            Voir l&rsquo;historique
-          </button>
+              <button
+                onClick={() => router.push("/app/spar/history")}
+                className="block mx-auto text-smoke text-[13px] underline bg-transparent border-none cursor-pointer"
+              >
+                Voir l&rsquo;historique
+              </button>
+            </>
+          ) : (
+            <div className="bg-carbon rounded-card p-5">
+              <div className="text-bone text-sm mb-1">Pas encore de compte ?</div>
+              <div className="text-smoke text-[13px]">
+                Connecte-toi ou crée un compte pour demander à rejoindre une session ou en créer une.
+              </div>
+            </div>
+          )}
         </>
       )}
     </div>

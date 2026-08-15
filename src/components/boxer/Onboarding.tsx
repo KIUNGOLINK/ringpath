@@ -1,3 +1,4 @@
+import { useRouter } from "next/navigation";
 import { LogoMark } from "@/components/Logo";
 import type { BoxerAppApi } from "./useBoxerApp";
 
@@ -10,6 +11,7 @@ export function Onboarding({ api }: { api: BoxerAppApi }) {
 }
 
 function OnboardStep0({ api }: { api: BoxerAppApi }) {
+  const router = useRouter();
   return (
     <div className="absolute inset-0 bg-passport-bg flex flex-col">
       <div className="flex-1 m-5 mt-5 rounded-lg overflow-hidden bg-obsidian flex flex-col items-center justify-center gap-4">
@@ -17,22 +19,20 @@ function OnboardStep0({ api }: { api: BoxerAppApi }) {
         <span className="text-2xl font-semibold tracking-[-0.02em] text-bone">RINGPATH</span>
       </div>
       <div className="px-6 pt-8 pb-10">
-        <div className="text-4xl font-bold text-obsidian leading-[40px] mb-2">CONSTRUIS TON CHEMIN.</div>
-        <div className="text-[15px] text-smoke mb-6">Entraînement. Compétition. Carrière.</div>
+        <div className="text-4xl font-bold text-obsidian leading-[40px] mb-5">CONSTRUIS TON CHEMIN.</div>
+        <div className="text-[11px] text-obsidian/55 mb-1.5 px-0.5">Suis ta progression, ton club, tes compétitions.</div>
         <button
           onClick={() => {
             api.setSparIntent(false);
             api.goToStep(1);
           }}
-          className="w-full h-[52px] rounded-pill bg-obsidian text-bone text-[15px] font-semibold cursor-pointer mb-2.5"
+          className="w-full h-[52px] rounded-pill bg-obsidian text-bone text-[15px] font-semibold cursor-pointer mb-3.5"
         >
           RingPath Compét
         </button>
+        <div className="text-[11px] text-obsidian/55 mb-1.5 px-0.5">Trouve un partenaire de sparring près de toi.</div>
         <button
-          onClick={() => {
-            api.setSparIntent(true);
-            api.goToStep(2);
-          }}
+          onClick={() => router.push("/app/spar")}
           className="w-full h-[52px] rounded-pill bg-fight-red text-pure-white text-[15px] font-semibold cursor-pointer mb-3"
         >
           Spar
@@ -82,13 +82,20 @@ function OnboardStep1({ api }: { api: BoxerAppApi }) {
 
 function OnboardStep2({ api }: { api: BoxerAppApi }) {
   const { state } = api;
+  const isSpar = state.sparIntent;
   return (
     <div className="absolute inset-0 bg-obsidian px-5 pt-16 pb-6 overflow-y-auto">
       <div className="h-0.5 bg-steel rounded-full mb-8">
-        <div className="w-2/3 h-full bg-bone rounded-full" />
+        <div className={`${isSpar ? "w-1/2" : "w-2/3"} h-full bg-bone rounded-full`} />
       </div>
-      <div className="text-xs text-smoke mb-2">ÉTAPE 2/3</div>
-      <div className="text-[28px] font-bold text-bone mb-8">TES INFOS</div>
+      <div className="text-xs text-smoke mb-2">{isSpar ? "ÉTAPE 1/2" : "ÉTAPE 2/3"}</div>
+      <div className="text-[28px] font-bold text-bone mb-1">TES INFOS</div>
+      {isSpar && (
+        <div className="text-[13px] text-smoke mb-8">
+          Ton poids et ta garde servent à te proposer les bons partenaires.
+        </div>
+      )}
+      {!isSpar && <div className="mb-8" />}
       <div className="flex flex-col gap-4 mb-8">
         <Field label="Prénom" value={state.firstName} onChange={api.setFirstName} placeholder="Nadia" />
         <Field label="Nom" value={state.lastName} onChange={api.setLastName} placeholder="Kader" />
@@ -111,12 +118,14 @@ function OnboardStep2({ api }: { api: BoxerAppApi }) {
             ))}
           </div>
         </div>
-        <Field
-          label="Code club (optionnel)"
-          value={state.clubCode}
-          onChange={api.setClubCode}
-          placeholder="ABC123"
-        />
+        {!isSpar && (
+          <Field
+            label="Code club (optionnel)"
+            value={state.clubCode}
+            onChange={api.setClubCode}
+            placeholder="ABC123"
+          />
+        )}
         <Field label="Email" value={state.email} onChange={api.setEmail} placeholder="toi@email.com" type="email" />
         <Field
           label="Mot de passe"

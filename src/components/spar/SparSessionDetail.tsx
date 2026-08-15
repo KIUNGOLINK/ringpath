@@ -54,7 +54,13 @@ export function SparSessionDetail({ id }: { id: string }) {
   const isPast = s.session_date < new Date().toISOString().slice(0, 10);
 
   async function handleRequest() {
-    if (!userId) return;
+    if (!userId) {
+      const wantsLogin = window.confirm(
+        "Il te faut un compte pour rejoindre ce sparring. OK pour te connecter, Annuler pour créer un compte Spar."
+      );
+      router.push(wantsLogin ? "/app?intent=spar&login=1" : "/app?intent=spar");
+      return;
+    }
     setSubmitting(true);
     setError(null);
     try {

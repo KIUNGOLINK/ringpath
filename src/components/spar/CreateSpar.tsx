@@ -107,7 +107,14 @@ export function CreateSpar() {
   async function handleCreate() {
     const { data } = await supabase.auth.getSession();
     const userId = data.session?.user.id;
-    if (!userId || !sessionDate || !startTime || !city) return;
+    if (!userId) {
+      const wantsLogin = window.confirm(
+        "Il te faut un compte pour publier un sparring. OK pour te connecter, Annuler pour créer un compte Spar."
+      );
+      router.push(wantsLogin ? "/app?intent=spar&login=1" : "/app?intent=spar");
+      return;
+    }
+    if (!sessionDate || !startTime || !city) return;
     setSubmitting(true);
     setError(null);
     try {

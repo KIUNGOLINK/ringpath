@@ -1,7 +1,7 @@
 "use client";
 
 import { useCallback, useEffect, useRef, useState } from "react";
-import { useRouter } from "next/navigation";
+import { useRouter, useSearchParams } from "next/navigation";
 import { createClient } from "@/lib/supabase/client";
 import { completeSession, getBoxerBundle, joinClub, signUpBoxer, updateBoxerPhoto } from "@/lib/supabase/queries";
 import { getAppMode, setAppMode } from "@/lib/supabase/spar";
@@ -18,6 +18,7 @@ export function useBoxerApp() {
   const [state, setState] = useState<BoxerState>(INITIAL_STATE);
   const supabase = createClient();
   const router = useRouter();
+  const searchParams = useSearchParams();
   const toastTimeoutRef = useRef<ReturnType<typeof setTimeout> | null>(null);
 
   const loadBundle = useCallback(
@@ -77,6 +78,10 @@ export function useBoxerApp() {
           return;
         }
         loadBundle(data.session.user.id);
+      } else if (searchParams.get("intent") === "spar" && searchParams.get("login") === "1") {
+        setState((s) => ({ ...s, screen: "login", sparIntent: true }));
+      } else if (searchParams.get("intent") === "spar") {
+        setState((s) => ({ ...s, screen: "onboarding", onboardStep: 2, sparIntent: true }));
       } else {
         setState((s) => ({ ...s, screen: "onboarding" }));
       }
@@ -84,6 +89,7 @@ export function useBoxerApp() {
     return () => {
       cancelled = true;
     };
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [supabase, router, loadBundle]);
 
   useEffect(() => {
