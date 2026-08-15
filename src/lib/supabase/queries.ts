@@ -63,10 +63,9 @@ export async function signUpBoxer(
     .from("camps")
     .insert({
       boxer_id: userId,
-      opponent_name: "TBD",
       week_current: 1,
       week_total: 8,
-      objectives: ["Set your camp objectives with your coach."],
+      objectives: ["Définis tes objectifs de camp avec ton coach."],
     })
     .select()
     .single();
@@ -75,8 +74,8 @@ export async function signUpBoxer(
   await supabase.from("sessions").insert([
     {
       camp_id: camp.id,
-      title: "Welcome session",
-      subtitle: "Getting started · 30 min",
+      title: "Séance de bienvenue",
+      subtitle: "Prise en main · 30 min",
       session_type: "Technical",
       completed: false,
     },

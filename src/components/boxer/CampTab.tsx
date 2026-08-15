@@ -29,7 +29,7 @@ export function CampTab({ api }: { api: BoxerAppApi }) {
       <div className="text-center mb-6">
         <div className="text-[15px] font-semibold text-bone">
           {displayFirstName} <span className="text-smoke font-medium">vs</span>{" "}
-          {(camp?.opponentName ?? "À définir").toUpperCase()}
+          {(camp?.opponentName || "À définir").toUpperCase()}
         </div>
         <div className="font-condensed text-[56px] leading-[52px] font-bold text-bone mt-2">
           {daysOut !== null ? `${daysOut} JOURS` : "AUCUN COMBAT"}
