@@ -1,0 +1,8 @@
+{
+  "crons": [
+    {
+      "path": "/api/cron/daily-signups",
+      "schedule": "0 22 * * *"
+    }
+  ]
+}
