@@ -1,5 +1,6 @@
 import type { Metadata } from "next";
 import { Instrument_Sans, Barlow_Condensed } from "next/font/google";
+import { Analytics } from "@vercel/analytics/next";
 import { DemoNav } from "@/components/DemoNav";
 import "./globals.css";
 
@@ -30,6 +31,7 @@ export default function RootLayout({ children }: LayoutProps<"/">) {
       <body className="min-h-full bg-obsidian text-bone font-sans">
         {children}
         <DemoNav />
+        <Analytics />
       </body>
     </html>
   );
