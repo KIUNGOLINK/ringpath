@@ -237,7 +237,7 @@ export function SparTimer() {
   };
 
   return (
-    <div className="min-h-screen bg-obsidian flex flex-col max-w-md mx-auto">
+    <div className="min-h-screen bg-obsidian flex flex-col max-w-md lg:max-w-2xl mx-auto">
       <div className="px-5 pt-16 pb-5 flex items-center gap-4">
         <button
           onClick={() => {

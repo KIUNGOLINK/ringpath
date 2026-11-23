@@ -62,7 +62,7 @@ export function FindSpar() {
   }, [city, mode]);
 
   return (
-    <div className="min-h-screen bg-obsidian max-w-md mx-auto">
+    <div className="min-h-screen bg-obsidian max-w-md lg:max-w-2xl mx-auto">
       <div className="px-5 pt-16 pb-4 flex items-center gap-4">
         <button onClick={() => router.back()} className="w-11 h-11 -ml-2.5 flex items-center justify-center cursor-pointer bg-transparent border-none text-bone">
           <ChevronLeftIcon />

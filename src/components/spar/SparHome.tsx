@@ -66,7 +66,7 @@ export function SparHome() {
   }
 
   return (
-    <div className="min-h-screen bg-obsidian px-5 pt-16 pb-12 max-w-md mx-auto">
+    <div className="min-h-screen bg-obsidian px-5 pt-16 pb-12 max-w-md lg:max-w-2xl mx-auto">
       <div className="flex items-center justify-between mb-8">
         <div className="flex items-center gap-1">
           {!userId && (
@@ -77,8 +77,11 @@ export function SparHome() {
               <ChevronLeftIcon size={18} />
             </button>
           )}
-          <SparMark size={28} />
-          <div className="text-[26px] font-bold text-bone tracking-[-0.01em]">SPAR</div>
+          <span className="flex items-center gap-1 lg:hidden">
+            <SparMark size={28} />
+            <span className="text-[26px] font-bold text-bone tracking-[-0.01em]">SPAR</span>
+          </span>
+          <span className="hidden font-condensed text-3xl font-bold uppercase text-bone lg:inline">Accueil</span>
         </div>
         {userId ? (
           <div className="relative">
