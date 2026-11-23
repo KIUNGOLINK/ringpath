@@ -86,11 +86,25 @@ export async function listSparSessions(supabase: Client, filters: SparDiscoveryF
 
   if (filters.city) query = query.ilike("city", `%${filters.city}%`);
   if (filters.mode && filters.mode !== "ALL") query = query.eq("mode", filters.mode);
-  if (filters.fromDate) query = query.gte("session_date", filters.fromDate);
+  if (filters.fromDate) {
+    query = query.gte("session_date", filters.fromDate);
+  } else {
+    // By default only upcoming sessions are discoverable: a session whose date
+    // (or start time today) has passed must never show up as "near you".
+    const { date, time } = parisNow();
+    query = query.or(`session_date.gt.${date},and(session_date.eq.${date},start_time.gte.${time})`);
+  }
 
   const { data, error } = await query;
   if (error) throw error;
   return await attachHostNames(supabase, data ?? []);
+}
+
+function parisNow() {
+  const now = new Date();
+  const date = now.toLocaleDateString("sv-SE", { timeZone: "Europe/Paris" });
+  const time = now.toLocaleTimeString("fr-FR", { timeZone: "Europe/Paris", hour: "2-digit", minute: "2-digit", hour12: false });
+  return { date, time: `${time}:00` };
 }
 
 export async function listMySparSessions(supabase: Client, userId: string) {

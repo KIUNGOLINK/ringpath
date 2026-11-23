@@ -3,7 +3,7 @@
 import { useEffect, useState } from "react";
 import { useRouter } from "next/navigation";
 import { createClient } from "@/lib/supabase/client";
-import { setAppMode, listSparSessions, listMySparSessions, listMyJoinRequests } from "@/lib/supabase/spar";
+import { listSparSessions, listMySparSessions, listMyJoinRequests } from "@/lib/supabase/spar";
 import { ChevronLeftIcon, ChevronRightIcon } from "@/components/icons/Icon";
 import { SparMark } from "./SparLogo";
 import { SparSessionCard } from "./SparSessionCard";
@@ -11,7 +11,8 @@ import { SparSessionCard } from "./SparSessionCard";
 export function SparHome() {
   const router = useRouter();
   const supabase = createClient();
-  const [switching, setSwitching] = useState(false);
+  const [menuOpen, setMenuOpen] = useState(false);
+  const [firstName, setFirstName] = useState("");
   const [loading, setLoading] = useState(true);
   const [userId, setUserId] = useState<string | null>(null);
   const [nearby, setNearby] = useState<Awaited<ReturnType<typeof listSparSessions>>>([]);
@@ -24,6 +25,16 @@ export function SparHome() {
       const uid = data.session?.user.id ?? null;
       if (cancelled) return;
       setUserId(uid);
+      if (uid) {
+        supabase
+          .from("profiles")
+          .select("first_name")
+          .eq("id", uid)
+          .maybeSingle()
+          .then(({ data: profile }) => {
+            if (!cancelled && profile?.first_name) setFirstName(profile.first_name);
+          });
+      }
       const [sessions, myRequests, mine] = await Promise.all([
         listSparSessions(supabase, {}),
         uid ? listMyJoinRequests(supabase, uid) : Promise.resolve([]),
@@ -41,11 +52,9 @@ export function SparHome() {
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
 
-  async function switchToCompet() {
-    if (!userId) return;
-    setSwitching(true);
-    await setAppMode(supabase, userId, "compet");
-    router.push("/app");
+  async function signOut() {
+    await supabase.auth.signOut();
+    router.replace("/");
   }
 
   function requireAuth(onAuthenticated: () => void) {
@@ -72,13 +81,27 @@ export function SparHome() {
           <div className="text-[26px] font-bold text-bone tracking-[-0.01em]">SPAR</div>
         </div>
         {userId ? (
-          <button
-            onClick={switchToCompet}
-            disabled={switching}
-            className="h-9 px-3.5 rounded-pill border border-steel text-bone text-xs font-semibold cursor-pointer disabled:opacity-50"
-          >
-            {switching ? "…" : "RingPath Compét →"}
-          </button>
+          <div className="relative">
+            <button
+              onClick={() => setMenuOpen((v) => !v)}
+              aria-label="Mon compte"
+              aria-expanded={menuOpen}
+              className="w-10 h-10 rounded-pill border border-steel bg-carbon text-bone font-condensed text-lg font-bold cursor-pointer flex items-center justify-center"
+            >
+              {(firstName[0] ?? "S").toUpperCase()}
+            </button>
+            {menuOpen && (
+              <div className="absolute right-0 top-12 z-20 min-w-[180px] rounded-card bg-carbon border border-steel p-1.5 shadow-light-lg">
+                {firstName && <div className="px-3 pt-2 pb-1.5 text-xs text-smoke">Connecté en tant que {firstName}</div>}
+                <button
+                  onClick={signOut}
+                  className="w-full text-left px-3 py-2.5 rounded-md bg-transparent border-none text-bone text-sm font-medium cursor-pointer hover:bg-graphite"
+                >
+                  Se déconnecter
+                </button>
+              </div>
+            )}
+          </div>
         ) : (
           <button
             onClick={() => router.push("/app?intent=spar&login=1")}

@@ -1,0 +1,11 @@
+{
+  "version": "0.0.1",
+  "configurations": [
+    {
+      "name": "ringpath-site",
+      "runtimeExecutable": "/bin/bash",
+      "runtimeArgs": ["-c", "cd /Users/maximekoumba/Claude/ringpath && /Users/maximekoumba/.nvm/versions/node/v24.19.0/bin/npm run dev -- -p 3500"],
+      "port": 3500
+    }
+  ]
+}

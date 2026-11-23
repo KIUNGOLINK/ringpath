@@ -54,27 +54,37 @@
   color-scheme: dark;
 }
 
-* {
-  box-sizing: border-box;
-}
+/* Base styles live in the base layer so Tailwind utilities (text-bone,
+   text-obsidian, ...) can override them. Unlayered element rules would beat
+   every utility and turn the text of link-buttons blue. */
+@layer base {
+  * {
+    box-sizing: border-box;
+  }
 
-body {
-  background: var(--color-obsidian);
-  color: var(--color-bone);
-}
+  html {
+    scroll-behavior: smooth;
+    -webkit-text-size-adjust: 100%;
+  }
 
-a {
-  color: var(--color-verified);
-  text-decoration: none;
-}
+  body {
+    background: var(--color-obsidian);
+    color: var(--color-bone);
+  }
 
-a:hover {
-  color: var(--color-information);
-}
+  a {
+    color: var(--color-verified);
+    text-decoration: none;
+  }
 
-::selection {
-  background: var(--color-fight-red);
-  color: var(--color-bone);
+  a:hover {
+    color: var(--color-information);
+  }
+
+  ::selection {
+    background: var(--color-fight-red);
+    color: var(--color-bone);
+  }
 }
 
 @media (prefers-reduced-motion: reduce) {
@@ -87,3 +97,15 @@ a:hover {
     scroll-behavior: auto !important;
   }
 }
+
+/* Footer gloves: a short, looping jab. Respects reduced motion (global rule). */
+@keyframes glove-left-punch {
+  0%, 20%, 100% { transform: translateX(0) rotate(0deg); }
+  10% { transform: translateX(5px) rotate(-10deg); }
+}
+@keyframes glove-right-punch {
+  0%, 20%, 100% { transform: translateX(0) rotate(0deg); }
+  10% { transform: translateX(-5px) rotate(10deg); }
+}
+.glove-punch-left { animation: glove-left-punch 1.6s ease-in-out infinite; }
+.glove-punch-right { animation: glove-right-punch 1.6s ease-in-out infinite 0.4s; }

@@ -70,20 +70,14 @@ export function useBoxerApp() {
     let cancelled = false;
     supabase.auth.getSession().then(async ({ data }) => {
       if (cancelled) return;
+      // Only the Spar side is open: every signed-in user lands in Spar, and
+      // every signed-out visitor goes through the lightweight Spar sign-up.
       if (data.session?.user) {
-        const mode = await getAppMode(supabase, data.session.user.id);
-        if (cancelled) return;
-        if (mode === "spar") {
-          router.replace("/app/spar");
-          return;
-        }
-        loadBundle(data.session.user.id);
-      } else if (searchParams.get("intent") === "spar" && searchParams.get("login") === "1") {
+        router.replace("/app/spar");
+      } else if (searchParams.get("login") === "1") {
         setState((s) => ({ ...s, screen: "login", sparIntent: true }));
-      } else if (searchParams.get("intent") === "spar") {
-        setState((s) => ({ ...s, screen: "onboarding", onboardStep: 2, sparIntent: true }));
       } else {
-        setState((s) => ({ ...s, screen: "onboarding" }));
+        setState((s) => ({ ...s, screen: "onboarding", onboardStep: 2, sparIntent: true }));
       }
     });
     return () => {
