@@ -13,7 +13,7 @@ const NAV: NavItem[] = [
   { href: "/app/spar", label: "Accueil", icon: HomeIcon, exact: true },
   { href: "/app/spar/find", label: "Trouver un sparring", icon: SearchIcon },
   { href: "/app/spar/create", label: "Créer une session", icon: PlusIcon },
-  { href: "/app/spar/timer", label: "Minuteur", icon: PlayIcon },
+  { href: "/minuteur", label: "Minuteur", icon: PlayIcon },
 ];
 
 const MEMBER_NAV: NavItem[] = [

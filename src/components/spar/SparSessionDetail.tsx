@@ -177,7 +177,7 @@ export function SparSessionDetail({ id }: { id: string }) {
       )}
 
       <button
-        onClick={() => router.push("/app/spar/timer")}
+        onClick={() => router.push("/minuteur")}
         className="w-full h-12 rounded-pill border border-steel text-bone text-sm font-semibold cursor-pointer mb-5"
       >
         Lancer le minuteur

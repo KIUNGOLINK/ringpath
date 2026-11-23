@@ -7,11 +7,11 @@ const CLOSED_SECTIONS = ["/coach", "/coach/:path*", "/scouting", "/passport/:pat
 
 const nextConfig: NextConfig = {
   async redirects() {
-    return CLOSED_SECTIONS.map((source) => ({
-      source,
-      destination: "/",
-      permanent: false,
-    }));
+    return [
+      ...CLOSED_SECTIONS.map((source) => ({ source, destination: "/", permanent: false })),
+      // The timer now lives in its own space.
+      { source: "/app/spar/timer", destination: "/minuteur", permanent: true },
+    ];
   },
 };
 

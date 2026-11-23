@@ -166,7 +166,7 @@ export function TimerSection() {
             ))}
           </ul>
           <Link
-            href="/app/spar/timer"
+            href="/minuteur"
             className="inline-flex h-[52px] items-center rounded-pill bg-bone px-7 text-[15px] font-semibold text-obsidian transition-transform hover:scale-[1.015] hover:bg-pure-white hover:text-obsidian active:scale-[0.98]"
           >
             Ouvrir le minuteur

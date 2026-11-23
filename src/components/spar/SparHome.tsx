@@ -133,7 +133,7 @@ export function SparHome() {
       </div>
 
       <button
-        onClick={() => router.push("/app/spar/timer")}
+        onClick={() => router.push("/minuteur")}
         className="w-full h-11 rounded-pill border border-steel text-bone text-[13px] font-semibold cursor-pointer mb-7"
       >
         Minuteur

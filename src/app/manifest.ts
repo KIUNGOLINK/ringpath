@@ -22,7 +22,7 @@ export default function manifest(): MetadataRoute.Manifest {
     ],
     shortcuts: [
       { name: "Trouver un sparring", url: "/app/spar/find" },
-      { name: "Minuteur", url: "/app/spar/timer" },
+      { name: "Minuteur", url: "/minuteur" },
       { name: "Créer une session", url: "/app/spar/create" },
     ],
   };
