@@ -150,3 +150,21 @@ export function ClockIcon({ size = 20, ...props }: IconProps) {
     </svg>
   );
 }
+
+export function EyeIcon({ size = 20, ...props }: IconProps) {
+  return (
+    <svg {...base(size, props)}>
+      <path d="M2.5 12S6 5.5 12 5.5 21.5 12 21.5 12 18 18.5 12 18.5 2.5 12 2.5 12z" stroke="currentColor" strokeWidth="1.75" strokeLinecap="round" strokeLinejoin="round" />
+      <circle cx="12" cy="12" r="2.75" stroke="currentColor" strokeWidth="1.75" />
+    </svg>
+  );
+}
+
+export function EyeOffIcon({ size = 20, ...props }: IconProps) {
+  return (
+    <svg {...base(size, props)}>
+      <path d="M9.9 5.7A9.6 9.6 0 0112 5.5c6 0 9.5 6.5 9.5 6.5a16.5 16.5 0 01-2.6 3.4M6.5 7.3A16 16 0 002.5 12S6 18.5 12 18.5a9.4 9.4 0 004.1-.95" stroke="currentColor" strokeWidth="1.75" strokeLinecap="round" strokeLinejoin="round" />
+      <path d="M9.9 9.9a3 3 0 004.2 4.2M3 3l18 18" stroke="currentColor" strokeWidth="1.75" strokeLinecap="round" strokeLinejoin="round" />
+    </svg>
+  );
+}

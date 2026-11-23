@@ -3,7 +3,7 @@
 import { LogoMark } from "@/components/Logo";
 import { PhoneFrame } from "@/components/ui/PhoneFrame";
 import { useBoxerApp } from "./useBoxerApp";
-import { Onboarding, Login } from "./Onboarding";
+import { Onboarding, Login, Forgot } from "./Onboarding";
 import { AppShellContent } from "./AppShell";
 import { BottomNav } from "./BottomNav";
 import { SessionDetail } from "./SessionDetail";
@@ -44,6 +44,7 @@ export function BoxerApp() {
       {state.screen === "loading" && <Loading />}
       {state.screen === "onboarding" && <Onboarding api={api} />}
       {state.screen === "login" && <Login api={api} />}
+      {state.screen === "forgot" && <Forgot api={api} />}
       {state.screen === "app" && <AppShellContent api={api} />}
       {state.screen === "sessionDetail" && <SessionDetail api={api} />}
       {state.screen === "sparringTimer" && <SparringTimer api={api} />}

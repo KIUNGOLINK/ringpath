@@ -2,6 +2,7 @@ export type Screen =
   | "loading"
   | "onboarding"
   | "login"
+  | "forgot"
   | "app"
   | "sessionDetail"
   | "sparringTimer"
@@ -56,6 +57,7 @@ export interface BoxerState {
   toast: string | null;
   authError: string | null;
   authSubmitting: boolean;
+  resetSent: boolean;
   // draft fields used during the onboarding wizard, before the account exists
   firstName: string;
   lastName: string;
@@ -101,6 +103,7 @@ export const INITIAL_STATE: BoxerState = {
   toast: null,
   authError: null,
   authSubmitting: false,
+  resetSent: false,
   firstName: "",
   lastName: "",
   weight: "71",

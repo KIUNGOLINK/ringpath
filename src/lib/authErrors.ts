@@ -1,5 +1,8 @@
 const KNOWN: Array<[RegExp, string]> = [
-  [/email rate limit exceeded/i, "Trop de tentatives d'inscription récentes. Réessaie dans quelques minutes."],
+  [/email rate limit exceeded|rate limit/i, "Trop de demandes récentes. Réessaie dans quelques minutes."],
+  [/for security purposes|only request this after/i, "Pour ta sécurité, attends une minute avant de refaire une demande."],
+  [/different from the old password|same.*password/i, "Choisis un mot de passe différent de l'ancien."],
+  [/auth session missing|session.*(missing|expired)|token.*(expired|invalid)|expired/i, "Ce lien a expiré. Refais une demande de réinitialisation."],
   [/invalid login credentials/i, "Email ou mot de passe incorrect."],
   [/user already registered|already been registered/i, "Un compte existe déjà avec cet email."],
   [/email.*invalid|invalid.*email/i, "Cette adresse email n'est pas valide."],

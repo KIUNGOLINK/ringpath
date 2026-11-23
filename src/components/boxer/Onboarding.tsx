@@ -1,7 +1,8 @@
 import { useRouter } from "next/navigation";
 import { LogoMark } from "@/components/Logo";
 import { SparMark } from "@/components/spar/SparLogo";
-import { ChevronLeftIcon } from "@/components/icons/Icon";
+import { ChevronLeftIcon, CheckIcon } from "@/components/icons/Icon";
+import { PasswordInput } from "@/components/ui/PasswordInput";
 import type { BoxerAppApi } from "./useBoxerApp";
 
 export function Onboarding({ api }: { api: BoxerAppApi }) {
@@ -140,6 +141,7 @@ function OnboardStep2({ api }: { api: BoxerAppApi }) {
           onChange={api.setPassword}
           placeholder="6 caractères minimum"
           type="password"
+          autoComplete="new-password"
         />
       </div>
       <button
@@ -206,18 +208,34 @@ export function Login({ api }: { api: BoxerAppApi }) {
         <span className="text-[15px] font-semibold text-bone">{isSpar ? "SPAR" : "RINGPATH"}</span>
       </div>
       <div className="text-[28px] font-bold text-bone mb-8">CONTENT DE TE REVOIR</div>
-      <div className="flex flex-col gap-4 mb-6">
-        <Field label="Email" value={state.email} onChange={api.setEmail} placeholder="toi@email.com" type="email" />
-        <Field label="Mot de passe" value={state.password} onChange={api.setPassword} placeholder="••••••••" type="password" />
-      </div>
-      {state.authError && <div className="text-sm text-error mb-4">{state.authError}</div>}
-      <button
-        onClick={api.login}
-        disabled={state.authSubmitting}
-        className="w-full h-[52px] rounded-pill bg-bone text-obsidian text-[15px] font-semibold cursor-pointer disabled:opacity-50 mb-3"
+      <form
+        onSubmit={(e) => {
+          e.preventDefault();
+          api.login();
+        }}
       >
-        {state.authSubmitting ? "Connexion…" : "Se connecter"}
-      </button>
+        <div className="flex flex-col gap-4 mb-3">
+          <Field label="Email" value={state.email} onChange={api.setEmail} placeholder="toi@email.com" type="email" />
+          <Field label="Mot de passe" value={state.password} onChange={api.setPassword} placeholder="••••••••" type="password" autoComplete="current-password" />
+        </div>
+        <div className="flex justify-end mb-6">
+          <button
+            type="button"
+            onClick={api.goToForgot}
+            className="h-9 px-1 bg-transparent border-none text-[13px] font-semibold text-mist hover:text-bone cursor-pointer"
+          >
+            Mot de passe oublié ?
+          </button>
+        </div>
+        {state.authError && <div className="text-sm text-error mb-4">{state.authError}</div>}
+        <button
+          type="submit"
+          disabled={state.authSubmitting}
+          className="w-full h-[52px] rounded-pill bg-bone text-obsidian text-[15px] font-semibold cursor-pointer disabled:opacity-50 mb-3"
+        >
+          {state.authSubmitting ? "Connexion…" : "Se connecter"}
+        </button>
+      </form>
       <button
         onClick={api.goToOnboarding}
         className="w-full h-11 bg-transparent text-bone text-sm font-semibold cursor-pointer"
@@ -228,29 +246,112 @@ export function Login({ api }: { api: BoxerAppApi }) {
   );
 }
 
+export function Forgot({ api }: { api: BoxerAppApi }) {
+  const { state } = api;
+  const isSpar = state.sparIntent;
+  return (
+    <div className="absolute inset-0 bg-obsidian px-5 pt-14 pb-6 flex flex-col">
+      <button
+        onClick={api.goToLogin}
+        aria-label="Retour à la connexion"
+        className="w-11 h-11 -ml-2.5 flex items-center justify-center cursor-pointer bg-transparent border-none text-bone mb-3"
+      >
+        <ChevronLeftIcon />
+      </button>
+      <div className="flex items-center gap-3 mb-8">
+        {isSpar ? <SparMark size={24} /> : <LogoMark size={24} />}
+        <span className="text-[15px] font-semibold text-bone">{isSpar ? "SPAR" : "RINGPATH"}</span>
+      </div>
+
+      {state.resetSent ? (
+        <>
+          <div className="w-12 h-12 rounded-full bg-carbon flex items-center justify-center text-success mb-5">
+            <CheckIcon size={24} />
+          </div>
+          <div className="text-[28px] font-bold text-bone mb-3">VÉRIFIE TES EMAILS</div>
+          <p className="text-[15px] leading-6 text-mist mb-8">
+            Si un compte existe pour <span className="text-bone font-semibold">{state.email.trim()}</span>, tu vas recevoir un lien pour
+            choisir un nouveau mot de passe. Pense à regarder dans tes indésirables.
+          </p>
+          <button
+            onClick={api.goToLogin}
+            className="w-full h-[52px] rounded-pill bg-bone text-obsidian text-[15px] font-semibold cursor-pointer mb-3"
+          >
+            Retour à la connexion
+          </button>
+          <button
+            onClick={api.sendResetEmail}
+            disabled={state.authSubmitting}
+            className="w-full h-11 bg-transparent border-none text-bone text-sm font-semibold cursor-pointer disabled:opacity-50"
+          >
+            {state.authSubmitting ? "Envoi…" : "Renvoyer le lien"}
+          </button>
+          {state.authError && <div className="text-sm text-error mt-3 text-center">{state.authError}</div>}
+        </>
+      ) : (
+        <form
+          onSubmit={(e) => {
+            e.preventDefault();
+            api.sendResetEmail();
+          }}
+          className="flex flex-col"
+        >
+          <div className="text-[28px] font-bold text-bone mb-3">MOT DE PASSE OUBLIÉ ?</div>
+          <p className="text-[15px] leading-6 text-mist mb-8">Entre ton email, on t&rsquo;envoie un lien pour en choisir un nouveau.</p>
+          <div className="mb-6">
+            <Field label="Email" value={state.email} onChange={api.setEmail} placeholder="toi@email.com" type="email" />
+          </div>
+          {state.authError && <div className="text-sm text-error mb-4">{state.authError}</div>}
+          <button
+            type="submit"
+            disabled={state.authSubmitting || !state.email.trim()}
+            className="w-full h-[52px] rounded-pill bg-bone text-obsidian text-[15px] font-semibold cursor-pointer disabled:opacity-40 mb-3"
+          >
+            {state.authSubmitting ? "Envoi…" : "Envoyer le lien"}
+          </button>
+          <button
+            type="button"
+            onClick={api.goToLogin}
+            className="w-full h-11 bg-transparent border-none text-bone text-sm font-semibold cursor-pointer"
+          >
+            Retour à la connexion
+          </button>
+        </form>
+      )}
+    </div>
+  );
+}
+
 function Field({
   label,
   value,
   onChange,
   placeholder,
   type = "text",
+  autoComplete,
 }: {
   label: string;
   value: string;
   onChange: (v: string) => void;
   placeholder: string;
   type?: string;
+  autoComplete?: "current-password" | "new-password";
 }) {
   return (
     <div>
       <div className="text-[13px] font-medium text-mist mb-2">{label}</div>
-      <input
-        type={type}
-        value={value}
-        onChange={(e) => onChange(e.target.value)}
-        placeholder={placeholder}
-        className="w-full h-[52px] rounded-md bg-[#141414] border border-steel px-4 text-[16px] text-bone placeholder:text-smoke outline-none focus:border-verified"
-      />
+      {type === "password" ? (
+        <PasswordInput value={value} onChange={onChange} placeholder={placeholder} autoComplete={autoComplete} />
+      ) : (
+        <input
+          type={type}
+          value={value}
+          onChange={(e) => onChange(e.target.value)}
+          placeholder={placeholder}
+          autoComplete={type === "email" ? "email" : undefined}
+          className="w-full h-[52px] rounded-md bg-[#141414] border border-steel px-4 text-[16px] text-bone placeholder:text-smoke outline-none focus:border-verified"
+        />
+      )}
     </div>
   );
 }

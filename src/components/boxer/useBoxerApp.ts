@@ -2,6 +2,7 @@
 
 import { useCallback, useEffect, useRef, useState } from "react";
 import { useRouter, useSearchParams } from "next/navigation";
+import { createClient as createSupabaseClient } from "@supabase/supabase-js";
 import { createClient } from "@/lib/supabase/client";
 import { completeSession, getBoxerBundle, joinClub, signUpBoxer, updateBoxerPhoto } from "@/lib/supabase/queries";
 import { getAppMode, setAppMode } from "@/lib/supabase/spar";
@@ -134,6 +135,10 @@ export function useBoxerApp() {
   const setEmail = useCallback((v: string) => setState((s) => ({ ...s, email: v })), []);
   const setPassword = useCallback((v: string) => setState((s) => ({ ...s, password: v })), []);
   const goToLogin = useCallback(() => setState((s) => ({ ...s, screen: "login", authError: null })), []);
+  const goToForgot = useCallback(
+    () => setState((s) => ({ ...s, screen: "forgot", authError: null, resetSent: false })),
+    []
+  );
   const goToOnboarding = useCallback(
     () =>
       setState((s) => ({
@@ -184,6 +189,28 @@ export function useBoxerApp() {
       }));
     }
   }, [supabase, router, state.email, state.password, state.firstName, state.lastName, state.weight, state.stance, state.clubCode, state.sparIntent, loadBundle]);
+
+  const sendResetEmail = useCallback(async () => {
+    setState((s) => ({ ...s, authSubmitting: true, authError: null }));
+    try {
+      const email = state.email.trim();
+      if (!email) throw new Error("invalid email");
+      // Implicit flow on purpose: the emailed link then works even when it is opened in a
+      // different browser or app than the one that asked for it (no PKCE verifier to match).
+      const mailer = createSupabaseClient(process.env.NEXT_PUBLIC_SUPABASE_URL!, process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY!, {
+        auth: { flowType: "implicit", persistSession: false, autoRefreshToken: false, detectSessionInUrl: false },
+      });
+      const { error } = await mailer.auth.resetPasswordForEmail(email, { redirectTo: `${window.location.origin}/app/reset` });
+      if (error) throw error;
+      setState((s) => ({ ...s, authSubmitting: false, resetSent: true }));
+    } catch (err) {
+      setState((s) => ({
+        ...s,
+        authSubmitting: false,
+        authError: err instanceof Error ? translateAuthError(err.message) : "Une erreur est survenue. Réessaie.",
+      }));
+    }
+  }, [state.email]);
 
   const setSparIntent = useCallback((intent: boolean) => setState((s) => ({ ...s, sparIntent: intent })), []);
 
@@ -361,6 +388,8 @@ export function useBoxerApp() {
     setEmail,
     setPassword,
     goToLogin,
+    goToForgot,
+    sendResetEmail,
     goToOnboarding,
     enterApp,
     login,
